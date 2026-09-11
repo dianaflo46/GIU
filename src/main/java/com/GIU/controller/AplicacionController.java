@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +39,7 @@ public class AplicacionController {
     }
 
     /**
-     * Listar roles activos por aplicación
+     * Consultar roles de una aplicación
      *
      * Método: GET
      * Ruta: /api/aplicaciones/{apliId}/roles
@@ -63,7 +64,7 @@ public class AplicacionController {
     }
 
     /**
-     * Listar usuarios activos por aplicación
+     * Listar usuarios activos de una aplicación
      *
      * Método: GET
      * Ruta: /api/aplicaciones/{apliId}/usuarios
@@ -92,7 +93,7 @@ public class AplicacionController {
     }
 
     /**
-     * Consultar rol de un usuario para una aplicación específica
+     * Consultar asignación de rol de un usuario
      *
      * Método: GET
      * Ruta: /api/aplicaciones/{apliId}/rol/usuarios/{usuarioRed}
@@ -132,7 +133,17 @@ public class AplicacionController {
     @PostMapping("/usuarios/asignacion-rol")
     public ResponseEntity<RespuestaGenerica<Void>> gestionarRolUsuario(
             @PathVariable Long apliId,
-            @Valid @RequestBody GestionarRolUsuarioRequest request) {
+            @Valid @RequestBody GestionarRolUsuarioRequest request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            RespuestaGenerica<Void> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null
+                    );
+        return ResponseEntity.ok(respuesta);
+        }
 
         usuarioService.gestionarRolUsuario(
                 apliId,

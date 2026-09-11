@@ -12,13 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.giu.exception.ErrorOperacionException;
 import com.giu.model.GestionarRolUsuarioRequest;
 import com.giu.model.UsuarioAplicacionDTO;
 import com.giu.model.UsuarioRequestDTO;
 import com.giu.model.UsuarioRolResponseDTO;
 import com.giu.utils.Constantes;
-import com.giu.utils.TipoRespuesta;
 import com.giu.utils.utilsBD;
 
 import oracle.jdbc.OracleTypes;
@@ -44,12 +42,12 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.registerOutParameter(
-                                                1,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(1, OracleTypes.CURSOR);
 
                                 stmt.setString(2, usuarioRed);
+
                                 stmt.setString(3, estado);
+
                                 stmt.setNull(4, Types.NUMERIC);
 
                                 stmt.execute();
@@ -82,17 +80,13 @@ public class GestionUsuariosRepository {
                                                                 rs.getString("SUPER_ADMINISTRADOR"));
 
                                                 usuario.setFechaCreacion(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_CREACION")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_CREACION")));
 
                                                 usuario.setUsuarioCreacion(
                                                                 rs.getString("USUARIO_CREACION"));
 
                                                 usuario.setFechaModificacion(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_MODIFICACION")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
 
                                                 usuario.setUsuarioModificacion(
                                                                 rs.getString("USUARIO_MODIFICACION"));
@@ -130,25 +124,15 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.registerOutParameter(
-                                                1,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(1, OracleTypes.CURSOR);
 
-                                stmt.setNull(
-                                                2,
-                                                Types.VARCHAR);
+                                stmt.setNull(2, Types.VARCHAR);
 
-                                stmt.setObject(
-                                                3,
-                                                apliId);
+                                stmt.setObject(3, apliId);
 
-                                stmt.setString(
-                                                4,
-                                                estado);
+                                stmt.setString(4, estado);
 
-                                stmt.setNull(
-                                                5,
-                                                Types.VARCHAR);
+                                stmt.setNull(5, Types.VARCHAR);
 
                                 stmt.execute();
 
@@ -180,17 +164,13 @@ public class GestionUsuariosRepository {
                                                                 rs.getString("ES_SUPER_ADMIN"));
 
                                                 usuario.setFechaCreacion(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_CREACION")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_CREACION")));
 
                                                 usuario.setUsuarioCreacion(
                                                                 rs.getString("USUARIO_CREACION"));
 
                                                 usuario.setFechaModificacion(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_MODIFICACION")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
 
                                                 usuario.setUsuarioModificacion(
                                                                 rs.getString("USUARIO_MODIFICACION"));
@@ -205,22 +185,16 @@ public class GestionUsuariosRepository {
                                                                 rs.getString("ESTADO_APLI"));
 
                                                 usuario.setIdRol(
-                                                                rs.getObject(
-                                                                                "ID_ROL",
-                                                                                Long.class));
+                                                                rs.getObject("ID_ROL", Long.class));
 
                                                 usuario.setNombreRol(
                                                                 rs.getString("NOMBRE_ROL"));
 
                                                 usuario.setFechaInRol(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_IN_ROL")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_IN_ROL")));
 
                                                 usuario.setFechaFinRol(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_FIN_ROL")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_FIN_ROL")));
 
                                                 usuarios.add(usuario);
                                         }
@@ -253,21 +227,13 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.registerOutParameter(
-                                                1,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(1, OracleTypes.CURSOR);
 
-                                stmt.setString(
-                                                2,
-                                                usuarioRed);
+                                stmt.setString(2, usuarioRed);
 
-                                stmt.setLong(
-                                                3,
-                                                apliId);
+                                stmt.setLong(3, apliId);
 
-                                stmt.setNull(
-                                                4,
-                                                Types.NUMERIC);
+                                stmt.setNull(4, Types.NUMERIC);
 
                                 stmt.execute();
 
@@ -278,26 +244,19 @@ public class GestionUsuariosRepository {
                                                 UsuarioRolResponseDTO usuarioRol = new UsuarioRolResponseDTO();
 
                                                 usuarioRol.setUsuarioRed(
-                                                                rs.getString(
-                                                                                "USUA_USUARIO_RED"));
+                                                                rs.getString("USUA_USUARIO_RED"));
 
                                                 usuarioRol.setApliId(
-                                                                rs.getLong(
-                                                                                "APLI_ID"));
+                                                                rs.getLong("APLI_ID"));
 
                                                 usuarioRol.setRolId(
-                                                                rs.getLong(
-                                                                                "ROL_ID"));
+                                                                rs.getLong("ROL_ID"));
 
                                                 usuarioRol.setFechaIn(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_IN")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_IN")));
 
                                                 usuarioRol.setFechaFin(
-                                                                convertirFecha(
-                                                                                rs.getTimestamp(
-                                                                                                "FECHA_FIN")));
+                                                                convertirFecha(rs.getTimestamp("FECHA_FIN")));
 
                                                 return usuarioRol;
                                         }
@@ -334,41 +293,23 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.setString(
-                                                1,
-                                                usuarioRed);
+                                stmt.setString(1, usuarioRed);
 
-                                stmt.setString(
-                                                2,
-                                                nombre);
+                                stmt.setString(2, nombre);
 
-                                stmt.setString(
-                                                3,
-                                                correo);
+                                stmt.setString(3, correo);
 
-                                stmt.setString(
-                                                4,
-                                                numeroIdentificacion);
+                                stmt.setString(4, numeroIdentificacion);
 
-                                stmt.setInt(
-                                                5,
-                                                0);
+                                stmt.setInt(5, 0);
 
-                                stmt.setString(
-                                                6,
-                                                usuarioCreacion);
+                                stmt.setString(6, usuarioCreacion);
 
-                                stmt.registerOutParameter(
-                                                7,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(7, OracleTypes.CURSOR);
 
-                                stmt.registerOutParameter(
-                                                8,
-                                                OracleTypes.NUMBER);
+                                stmt.registerOutParameter(8, OracleTypes.NUMBER);
 
-                                stmt.registerOutParameter(
-                                                9,
-                                                OracleTypes.VARCHAR);
+                                stmt.registerOutParameter(9, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
@@ -376,19 +317,12 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(9);
 
-                                validarResultadoCrearUsuario(
-                                                codigoSalida,
-                                                mensajeSalida);
+                                validarResultadoCrearUsuario(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-                                        // El procedimiento ya realizó la operación.
-                                        // No necesitamos recorrer el cursor aquí.
+                                        // No necesitamos recorrer el cursor.
                                 }
                         }
-
-                } catch (ErrorOperacionException e) {
-
-                        throw e;
 
                 } catch (Exception e) {
 
@@ -417,41 +351,23 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.setString(
-                                                1,
-                                                usuarioRed);
+                                stmt.setString(1, usuarioRed);
 
-                                stmt.setString(
-                                                2,
-                                                nombre);
+                                stmt.setString(2, nombre);
 
-                                stmt.setString(
-                                                3,
-                                                correo);
+                                stmt.setString(3, correo);
 
-                                stmt.setString(
-                                                4,
-                                                numeroIdentificacion);
+                                stmt.setString(4, numeroIdentificacion);
 
-                                stmt.setNull(
-                                                5,
-                                                Types.NUMERIC);
+                                stmt.setNull(5, Types.NUMERIC);
 
-                                stmt.setString(
-                                                6,
-                                                usuarioModificacion);
+                                stmt.setString(6, usuarioModificacion);
 
-                                stmt.registerOutParameter(
-                                                7,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(7, OracleTypes.CURSOR);
 
-                                stmt.registerOutParameter(
-                                                8,
-                                                OracleTypes.NUMBER);
+                                stmt.registerOutParameter(8, OracleTypes.NUMBER);
 
-                                stmt.registerOutParameter(
-                                                9,
-                                                OracleTypes.VARCHAR);
+                                stmt.registerOutParameter(9, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
@@ -459,18 +375,12 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(9);
 
-                                validarResultadoModificarUsuario(
-                                                codigoSalida,
-                                                mensajeSalida);
+                                validarResultadoModificarUsuario(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
                                         // No necesitamos recorrer el cursor.
                                 }
                         }
-
-                } catch (ErrorOperacionException e) {
-
-                        throw e;
 
                 } catch (Exception e) {
 
@@ -496,65 +406,39 @@ public class GestionUsuariosRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.setLong(
-                                                1,
-                                                apliId);
+                                stmt.setLong(1, apliId);
 
-                                stmt.setLong(
-                                                2,
-                                                request.getRolId());
+                                stmt.setLong(2, request.getRolId());
 
-                                stmt.setString(
-                                                3,
-                                                request.getUsuarioRed());
+                                stmt.setString(3, request.getUsuarioRed());
 
-                                stmt.setInt(
-                                                4,
-                                                0);
+                                stmt.setInt(4, 0);
 
                                 if (request.getFechaIn() != null) {
 
-                                        stmt.setTimestamp(
-                                                        5,
-                                                        Timestamp.valueOf(
-                                                                        request.getFechaIn()));
+                                        stmt.setTimestamp(5, Timestamp.valueOf(request.getFechaIn()));
 
                                 } else {
 
-                                        stmt.setNull(
-                                                        5,
-                                                        Types.TIMESTAMP);
+                                        stmt.setNull(5, Types.TIMESTAMP);
                                 }
 
                                 if (request.getFechaFin() != null) {
 
-                                        stmt.setTimestamp(
-                                                        6,
-                                                        Timestamp.valueOf(
-                                                                        request.getFechaFin()));
+                                        stmt.setTimestamp(6, Timestamp.valueOf(request.getFechaFin()));
 
                                 } else {
 
-                                        stmt.setNull(
-                                                        6,
-                                                        Types.TIMESTAMP);
+                                        stmt.setNull(6, Types.TIMESTAMP);
                                 }
 
-                                stmt.setString(
-                                                7,
-                                                request.getUsuarioModificacion());
+                                stmt.setString(7, request.getUsuarioModificacion());
 
-                                stmt.registerOutParameter(
-                                                8,
-                                                OracleTypes.CURSOR);
+                                stmt.registerOutParameter(8, OracleTypes.CURSOR);
 
-                                stmt.registerOutParameter(
-                                                9,
-                                                OracleTypes.NUMBER);
+                                stmt.registerOutParameter(9, OracleTypes.NUMBER);
 
-                                stmt.registerOutParameter(
-                                                10,
-                                                OracleTypes.VARCHAR);
+                                stmt.registerOutParameter(10, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
@@ -562,18 +446,12 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(10);
 
-                                validarResultadoGestionRol(
-                                                codigoSalida,
-                                                mensajeSalida);
+                                validarResultadoGestionRol(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(8)) {
                                         // No necesitamos recorrer el cursor.
                                 }
                         }
-
-                } catch (ErrorOperacionException e) {
-
-                        throw e;
 
                 } catch (Exception e) {
 
@@ -599,43 +477,8 @@ public class GestionUsuariosRepository {
                         return;
                 }
 
-                switch (codigoSalida) {
-
-                        case 1:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        case 2:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 3:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.OPERACION_NO_REALIZADA,
-                                                mensajeSalida);
-
-                        case 4:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.YA_EXISTE,
-                                                mensajeSalida);
-
-                        case 5:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 6:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        default:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.ERROR_BD,
-                                                mensajeSalida);
-                }
+                throw new RuntimeException(
+                                mensajeSalida);
         }
 
         /*
@@ -649,43 +492,8 @@ public class GestionUsuariosRepository {
                         return;
                 }
 
-                switch (codigoSalida) {
-
-                        case 1:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        case 2:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 3:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.OPERACION_NO_REALIZADA,
-                                                mensajeSalida);
-
-                        case 4:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.YA_EXISTE,
-                                                mensajeSalida);
-
-                        case 5:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 6:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        default:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.ERROR_BD,
-                                                mensajeSalida);
-                }
+                throw new RuntimeException(
+                                mensajeSalida);
         }
 
         /*
@@ -699,63 +507,8 @@ public class GestionUsuariosRepository {
                         return;
                 }
 
-                switch (codigoSalida) {
-
-                        case 1:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        case 2:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.DATOS_INVALIDOS,
-                                                mensajeSalida);
-
-                        case 3:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 4:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 5:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.OPERACION_NO_REALIZADA,
-                                                mensajeSalida);
-
-                        case 6:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 7:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        case 8:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.OPERACION_NO_REALIZADA,
-                                                mensajeSalida);
-
-                        case 9:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.YA_EXISTE,
-                                                mensajeSalida);
-
-                        case 10:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.NO_ENCONTRADO,
-                                                mensajeSalida);
-
-                        default:
-                                throw new ErrorOperacionException(
-                                                TipoRespuesta.ERROR_BD,
-                                                mensajeSalida);
-                }
+                throw new RuntimeException(
+                                mensajeSalida);
         }
 
         /*

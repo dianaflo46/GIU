@@ -5,6 +5,7 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -69,8 +70,17 @@ public class UsuarioController {
      */
     @PostMapping
     public ResponseEntity<RespuestaGenerica<Void>> crearUsuario(
-            @Valid @RequestBody UsuarioRequestDTO request) {
+            @Valid @RequestBody UsuarioRequestDTO request,
+             BindingResult bindingResult) {
 
+        if (bindingResult.hasErrors()) {
+            RespuestaGenerica<Void> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null
+                    );
+        return ResponseEntity.ok(respuesta);
+        }
         usuarioService.crearUsuario(request);
 
         RespuestaGenerica<Void> RespuestaGenerica =
@@ -86,7 +96,7 @@ public class UsuarioController {
      * Ruta: /api/usuarios
      *
      * Ejemplo de cuerpo de la solicitud:
-     * {
+     * { id : 1, falta
      *   "usuarioRed": "uuu111",
      *   "nombre": "DANIEL MUÑOZ",
      *   "correo": "user@gmail.com",
@@ -96,7 +106,17 @@ public class UsuarioController {
      */
     @PutMapping
     public ResponseEntity<RespuestaGenerica<Void>> modificarUsuario(
-            @Valid @RequestBody UsuarioRequestDTO request) {
+            @Valid @RequestBody UsuarioRequestDTO request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            RespuestaGenerica<Void> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null
+                    );
+            return ResponseEntity.ok(respuesta);
+        }
 
         usuarioService.modificarUsuario(request);
 

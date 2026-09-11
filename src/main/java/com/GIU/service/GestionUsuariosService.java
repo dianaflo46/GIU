@@ -25,9 +25,7 @@ public class GestionUsuariosService {
                         String estado) {
 
                 return gestionUsuariosRepository
-                                .obtenerUsuarios(
-                                                usuarioRed,
-                                                estado);
+                                .obtenerUsuarios(usuarioRed,estado);
         }
 
         public List<UsuarioAplicacionDTO> obtenerUsuariosPorAplicacion(
