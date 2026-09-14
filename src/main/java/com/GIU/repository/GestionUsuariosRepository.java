@@ -18,7 +18,7 @@ import com.giu.model.UsuarioRequestDTO;
 import com.giu.model.UsuarioRolResponseDTO;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
-
+import com.giu.utils.FechaUtils;
 import oracle.jdbc.OracleTypes;
 
 @Repository
@@ -26,12 +26,8 @@ public class GestionUsuariosRepository {
 
         private static final Logger logger = LogManager.getLogger("GIU");
 
-        /*
-         * CONSULTAR USUARIOS
-         */
-        public List<UsuarioRequestDTO> obtenerUsuarios(
-                        String usuarioRed,
-                        String estado) {
+        // Consultar usuarios
+        public List<UsuarioRequestDTO> obtenerUsuarios(String usuarioRed, String estado) {
 
                 List<UsuarioRequestDTO> usuarios = new ArrayList<>();
 
@@ -79,14 +75,14 @@ public class GestionUsuariosRepository {
                                                 usuario.setSuperAdministrador(
                                                                 rs.getString("SUPER_ADMINISTRADOR"));
 
-                                                usuario.setFechaCreacion(
-                                                                convertirFecha(rs.getTimestamp("FECHA_CREACION")));
+                                                usuario.setFechaCreacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_CREACION")));
 
                                                 usuario.setUsuarioCreacion(
                                                                 rs.getString("USUARIO_CREACION"));
 
-                                                usuario.setFechaModificacion(
-                                                                convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
+                                                usuario.setFechaModificacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_MODIFICACION")));
 
                                                 usuario.setUsuarioModificacion(
                                                                 rs.getString("USUARIO_MODIFICACION"));
@@ -108,12 +104,8 @@ public class GestionUsuariosRepository {
                 return usuarios;
         }
 
-        /*
-         * CONSULTAR USUARIOS POR APLICACIÓN
-         */
-        public List<UsuarioAplicacionDTO> obtenerUsuarioXAplicacion(
-                        Long apliId,
-                        String estado) {
+        // Consultar usuarios asociados a una aplicación
+        public List<UsuarioAplicacionDTO> obtenerUsuarioXAplicacion(Long apliId, String estado) {
 
                 List<UsuarioAplicacionDTO> usuarios = new ArrayList<>();
 
@@ -163,14 +155,14 @@ public class GestionUsuariosRepository {
                                                 usuario.setEsSuperAdmin(
                                                                 rs.getString("ES_SUPER_ADMIN"));
 
-                                                usuario.setFechaCreacion(
-                                                                convertirFecha(rs.getTimestamp("FECHA_CREACION")));
+                                                usuario.setFechaCreacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_CREACION")));
 
                                                 usuario.setUsuarioCreacion(
                                                                 rs.getString("USUARIO_CREACION"));
 
-                                                usuario.setFechaModificacion(
-                                                                convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
+                                                usuario.setFechaModificacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_MODIFICACION")));
 
                                                 usuario.setUsuarioModificacion(
                                                                 rs.getString("USUARIO_MODIFICACION"));
@@ -190,11 +182,11 @@ public class GestionUsuariosRepository {
                                                 usuario.setNombreRol(
                                                                 rs.getString("NOMBRE_ROL"));
 
-                                                usuario.setFechaInRol(
-                                                                convertirFecha(rs.getTimestamp("FECHA_IN_ROL")));
+                                                usuario.setFechaInRol(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_IN_ROL")));
 
-                                                usuario.setFechaFinRol(
-                                                                convertirFecha(rs.getTimestamp("FECHA_FIN_ROL")));
+                                                usuario.setFechaFinRol(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_FIN_ROL")));
 
                                                 usuarios.add(usuario);
                                         }
@@ -213,12 +205,8 @@ public class GestionUsuariosRepository {
                 return usuarios;
         }
 
-        /*
-         * CONSULTAR ROL DEL USUARIO
-         */
-        public UsuarioRolResponseDTO obtenerRolUsuario(
-                        String usuarioRed,
-                        Long apliId) {
+        // Consultar rol de un usuario en una aplicación
+        public UsuarioRolResponseDTO obtenerRolUsuario(String usuarioRed, Long apliId) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -252,11 +240,11 @@ public class GestionUsuariosRepository {
                                                 usuarioRol.setRolId(
                                                                 rs.getLong("ROL_ID"));
 
-                                                usuarioRol.setFechaIn(
-                                                                convertirFecha(rs.getTimestamp("FECHA_IN")));
+                                                usuarioRol.setFechaIn(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_IN")));
 
-                                                usuarioRol.setFechaFin(
-                                                                convertirFecha(rs.getTimestamp("FECHA_FIN")));
+                                                usuarioRol.setFechaFin(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_FIN")));
 
                                                 return usuarioRol;
                                         }
@@ -276,9 +264,7 @@ public class GestionUsuariosRepository {
                 }
         }
 
-        /*
-         * CREAR USUARIO
-         */
+        // Crear usuario
         public void crearUsuario(
                         String usuarioRed,
                         String nombre,
@@ -317,10 +303,9 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(9);
 
-                                validarResultadoCrearUsuario(codigoSalida, mensajeSalida);
+                                utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-                                        // No necesitamos recorrer el cursor.
                                 }
                         }
 
@@ -334,9 +319,7 @@ public class GestionUsuariosRepository {
                 }
         }
 
-        /*
-         * MODIFICAR USUARIO
-         */
+        // Modificar usuario
         public void modificarUsuario(
                         String usuarioRed,
                         String nombre,
@@ -375,10 +358,9 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(9);
 
-                                validarResultadoModificarUsuario(codigoSalida, mensajeSalida);
+                                utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-                                        // No necesitamos recorrer el cursor.
                                 }
                         }
 
@@ -392,12 +374,8 @@ public class GestionUsuariosRepository {
                 }
         }
 
-        /*
-         * GESTIONAR ROL DEL USUARIO
-         */
-        public void gestionarRolUsuario(
-                        Long apliId,
-                        GestionarRolUsuarioRequest request) {
+        // Gestionar rol de un usuario en una aplicación
+        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -446,10 +424,9 @@ public class GestionUsuariosRepository {
 
                                 String mensajeSalida = stmt.getString(10);
 
-                                validarResultadoGestionRol(codigoSalida, mensajeSalida);
+                                utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(8)) {
-                                        // No necesitamos recorrer el cursor.
                                 }
                         }
 
@@ -466,59 +443,6 @@ public class GestionUsuariosRepository {
                 }
         }
 
-        /*
-         * VALIDAR RESULTADO CREAR USUARIO
-         */
-        private void validarResultadoCrearUsuario(
-                        int codigoSalida,
-                        String mensajeSalida) {
+        
 
-                if (codigoSalida == 0) {
-                        return;
-                }
-
-                throw new RuntimeException(
-                                mensajeSalida);
-        }
-
-        /*
-         * VALIDAR RESULTADO MODIFICAR USUARIO
-         */
-        private void validarResultadoModificarUsuario(
-                        int codigoSalida,
-                        String mensajeSalida) {
-
-                if (codigoSalida == 0) {
-                        return;
-                }
-
-                throw new RuntimeException(
-                                mensajeSalida);
-        }
-
-        /*
-         * VALIDAR RESULTADO GESTIONAR ROL
-         */
-        private void validarResultadoGestionRol(
-                        int codigoSalida,
-                        String mensajeSalida) {
-
-                if (codigoSalida == 0) {
-                        return;
-                }
-
-                throw new RuntimeException(
-                                mensajeSalida);
-        }
-
-        /*
-         * CONVERTIR FECHA
-         */
-        private java.time.LocalDateTime convertirFecha(
-                        Timestamp timestamp) {
-
-                return timestamp != null
-                                ? timestamp.toLocalDateTime()
-                                : null;
-        }
 }

@@ -3,9 +3,7 @@ package com.giu.repository;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.sql.Types;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,98 +14,88 @@ import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
 
 import oracle.jdbc.OracleTypes;
-
+import com.giu.utils.FechaUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 @Repository
 public class GestionRolesRepository {
 
-    private static final Logger logger =
-            LogManager.getLogger(Constantes.APLICACION);
+        // Se define un logger para registrar eventos y errores en la aplicación
+        private static final Logger logger = LogManager.getLogger(Constantes.APLICACION);
 
-    public List<RolResponseDTO> obtenerRoles(Long apliId) {
+        // Consultar los roles activos de una aplicación especifica
+        public List<RolResponseDTO> obtenerRoles(Long apliId) {
 
-        List<RolResponseDTO> roles = new ArrayList<>();
+                List<RolResponseDTO> roles = new ArrayList<>();
 
-        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
+                try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
 
-            String sql =
-                    "{ ? = call PKG_GIU_GESTION_ROLES.FN_OBTENER_ROL("
-                    + "?, ?, ?) }";
+                        String sql = "{ ? = call PKG_GIU_GESTION_ROLES.FN_OBTENER_ROL(" + "?, ?, ?) }";
 
-            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                        try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                stmt.registerOutParameter(1, OracleTypes.CURSOR);
+                                stmt.registerOutParameter(1, OracleTypes.CURSOR);
 
-                stmt.setNull(2, Types.NUMERIC);
+                                stmt.setNull(2, Types.NUMERIC);
 
-                stmt.setLong(3, apliId);
+                                stmt.setLong(3, apliId);
 
-                stmt.setString(4, "ACTIVO");
+                                stmt.setString(4, "ACTIVO");
 
-                stmt.execute();
+                                stmt.execute();
 
-                try (ResultSet rs =
-                        (ResultSet) stmt.getObject(1)) {
+                                try (ResultSet rs = (ResultSet) stmt.getObject(1)) {
 
-                    while (rs.next()) {
+                                        while (rs.next()) {
 
-                        RolResponseDTO rol = new RolResponseDTO();
+                                                RolResponseDTO rol = new RolResponseDTO();
 
-                        rol.setId(
-                                rs.getLong("ID"));
+                                                rol.setId(
+                                                                rs.getLong("ID"));
 
-                        rol.setApliId(
-                                rs.getLong("APLI_ID"));
+                                                rol.setApliId(
+                                                                rs.getLong("APLI_ID"));
 
-                        rol.setNombre(
-                                rs.getString("NOMBRE"));
+                                                rol.setNombre(
+                                                                rs.getString("NOMBRE"));
 
-                        rol.setDescripcion(
-                                rs.getString("DESCRIPCION"));
+                                                rol.setDescripcion(
+                                                                rs.getString("DESCRIPCION"));
 
-                        rol.setEstado(
-                                rs.getString("ESTADO"));
+                                                rol.setEstado(
+                                                                rs.getString("ESTADO"));
 
-                        rol.setFechaCreacion(
-                                convertirFecha(
-                                        rs.getTimestamp("FECHA_CREACION")));
+                                                rol.setFechaCreacion(FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_CREACION")));
 
-                        rol.setUsuarioCreacion(
-                                rs.getString("USUARIO_CREACION"));
+                                                rol.setUsuarioCreacion(
+                                                                rs.getString("USUARIO_CREACION"));
 
-                        rol.setFechaModificacion(
-                                convertirFecha(
-                                        rs.getTimestamp("FECHA_MODIFICACION")));
+                                                rol.setFechaModificacion(FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_MODIFICACION")));
 
-                        rol.setUsuarioModificacion(
-                                rs.getString("USUARIO_MODIFICACION"));
+                                                rol.setUsuarioModificacion(
+                                                                rs.getString("USUARIO_MODIFICACION"));
 
-                        roles.add(rol);
-                    }
+                                                roles.add(rol);
+                                        }
+                                }
+                        }
+
+                } catch (Exception e) {
+
+                        logger.error(
+                                        "Error consultando roles de la aplicación: {}",
+                                        apliId,
+                                        e);
+
+                        throw new RuntimeException(
+                                        "Error consultando roles de la aplicación",
+                                        e);
                 }
-            }
 
-        } catch (Exception e) {
-
-            logger.error(
-                    "Error consultando roles de la aplicación: {}",
-                    apliId,
-                    e);
-
-            throw new RuntimeException(
-                    "Error consultando roles de la aplicación",
-                    e);
+                return roles;
         }
 
-        return roles;
-    }
-
-    private LocalDateTime convertirFecha(Timestamp timestamp) {
-
-        return timestamp != null
-                ? timestamp.toLocalDateTime()
-                : null;
-    }
 }

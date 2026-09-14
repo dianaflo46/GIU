@@ -11,12 +11,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.giu.model.GestionarRolUsuarioRequest;
 import com.giu.model.RolResponseDTO;
-import com.giu.model.UsuarioAplicacionDTO;
 import com.giu.model.UsuarioRolResponseDTO;
 import com.giu.service.GestionRolesService;
 import com.giu.service.GestionUsuariosService;
@@ -58,35 +56,6 @@ public class AplicacionController {
                 new RespuestaGenerica<>(
                         TipoRespuesta.EXITOSO,
                         roles
-                );
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Listar usuarios activos de una aplicación
-     *
-     * Método: GET
-     * Ruta: /api/aplicaciones/{apliId}/usuarios
-     *
-     * Ejemplo:
-     * GET /api/aplicaciones/1/usuarios?estado=ACTIVO
-     */
-    @GetMapping("/usuarios")
-    public ResponseEntity<RespuestaGenerica<List<UsuarioAplicacionDTO>>> obtenerUsuariosPorAplicacion(
-            @PathVariable Long apliId,
-            @RequestParam(required = false) String estado) {
-
-        List<UsuarioAplicacionDTO> usuarios =
-                usuarioService.obtenerUsuariosPorAplicacion(
-                        apliId,
-                        estado
-                );
-
-        RespuestaGenerica<List<UsuarioAplicacionDTO>> respuesta =
-                new RespuestaGenerica<>(
-                        TipoRespuesta.EXITOSO,
-                        usuarios
                 );
 
         return ResponseEntity.ok(respuesta);

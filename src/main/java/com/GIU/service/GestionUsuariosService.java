@@ -13,38 +13,34 @@ import com.giu.repository.GestionUsuariosRepository;
 @Service
 public class GestionUsuariosService {
 
-        
+        // Se inyecta el repositorio de gestión de usuarios en el servicio
         private final GestionUsuariosRepository gestionUsuariosRepository;
 
+        // Constructor para inyectar el repositorio de gestión de usuarios
         public GestionUsuariosService(GestionUsuariosRepository gestionUsuariosRepository) {
                 this.gestionUsuariosRepository = gestionUsuariosRepository;
         }
 
-        public List<UsuarioRequestDTO> obtenerUsuarios(
-                        String usuarioRed,
-                        String estado) {
+        // Método para obtener los usuarios según el usuario de red y el estado
+        public List<UsuarioRequestDTO> obtenerUsuarios(String usuarioRed, String estado) {
 
-                return gestionUsuariosRepository
-                                .obtenerUsuarios(usuarioRed,estado);
+                return gestionUsuariosRepository.obtenerUsuarios(usuarioRed, estado);
         }
 
-        public List<UsuarioAplicacionDTO> obtenerUsuariosPorAplicacion(
-                        Long apliId,
-                        String estado) {
+        // Método para obtener los usuarios asociados a una aplicación específica según
+        // el estado
+        public List<UsuarioAplicacionDTO> obtenerUsuariosPorAplicacion(Long apliId, String estado) {
 
-                return gestionUsuariosRepository
-                                .obtenerUsuarioXAplicacion(apliId, estado);
+                return gestionUsuariosRepository.obtenerUsuarioXAplicacion(apliId, estado);
         }
 
-        public UsuarioRolResponseDTO obtenerRolUsuario(
-                        String usuarioRed,
-                        Long apliId) {
+        // Método para obtener el rol de un usuario específico en una aplicación
+        public UsuarioRolResponseDTO obtenerRolUsuario(String usuarioRed, Long apliId) {
 
-                return gestionUsuariosRepository.obtenerRolUsuario(
-                                usuarioRed,
-                                apliId);
+                return gestionUsuariosRepository.obtenerRolUsuario(usuarioRed, apliId);
         }
 
+        // Método para crear un nuevo usuario en el sistema
         public void crearUsuario(UsuarioRequestDTO request) {
 
                 gestionUsuariosRepository.crearUsuario(
@@ -55,8 +51,8 @@ public class GestionUsuariosService {
                                 request.getUsuarioCreacion());
         }
 
-        public void modificarUsuario(
-                        UsuarioRequestDTO request) {
+        // Método para modificar la información de un usuario existente en el sistema
+        public void modificarUsuario(UsuarioRequestDTO request) {
 
                 gestionUsuariosRepository.modificarUsuario(
                                 request.getUsuarioRed(),
@@ -66,12 +62,11 @@ public class GestionUsuariosService {
                                 request.getUsuarioModificacion());
         }
 
-        public void gestionarRolUsuario(
-        Long apliId,
-        GestionarRolUsuarioRequest request) {
+        // Método para gestionar el rol de un usuario en una aplicación específica
+        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
 
-    gestionUsuariosRepository.gestionarRolUsuario(
-            apliId,
-            request);
-}
+                gestionUsuariosRepository.gestionarRolUsuario(apliId, request);
+        }
+
+
 }
