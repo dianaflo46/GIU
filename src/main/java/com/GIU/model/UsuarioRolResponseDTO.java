@@ -1,10 +1,7 @@
 package com.giu.model;
 
 import java.time.LocalDateTime;
-
-
 import lombok.Data;
-
 
 @Data
 

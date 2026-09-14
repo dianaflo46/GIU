@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
 import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.UsuarioAplicacionDTO;
+import com.giu.model.UsuarioAplicacionResponseDTO;
 import com.giu.model.UsuarioRequestDTO;
 import com.giu.model.UsuarioRolResponseDTO;
 import com.giu.utils.Constantes;
@@ -105,9 +105,9 @@ public class GestionUsuariosRepository {
         }
 
         // Consultar usuarios asociados a una aplicación
-        public List<UsuarioAplicacionDTO> obtenerUsuarioXAplicacion(Long apliId, String estado) {
+        public List<UsuarioAplicacionResponseDTO> obtenerUsuarioXAplicacion(Long apliId, String estado) {
 
-                List<UsuarioAplicacionDTO> usuarios = new ArrayList<>();
+                List<UsuarioAplicacionResponseDTO> usuarios = new ArrayList<>();
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -132,7 +132,7 @@ public class GestionUsuariosRepository {
 
                                         while (rs.next()) {
 
-                                                UsuarioAplicacionDTO usuario = new UsuarioAplicacionDTO();
+                                                UsuarioAplicacionResponseDTO usuario = new UsuarioAplicacionResponseDTO();
 
                                                 usuario.setId(
                                                                 rs.getLong("ID"));
@@ -375,7 +375,7 @@ public class GestionUsuariosRepository {
         }
 
         // Gestionar rol de un usuario en una aplicación
-        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
+        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request, Integer operacion) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -390,7 +390,7 @@ public class GestionUsuariosRepository {
 
                                 stmt.setString(3, request.getUsuarioRed());
 
-                                stmt.setInt(4, 0);
+                                stmt.setInt(4, operacion);
 
                                 if (request.getFechaIn() != null) {
 
@@ -437,6 +437,7 @@ public class GestionUsuariosRepository {
                                         request.getRolId(),
                                         request.getUsuarioRed(),
                                         apliId,
+                                        operacion,
                                         e);
 
                         throw new RuntimeException(e);

@@ -6,6 +6,7 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -100,7 +101,7 @@ public class AplicacionController {
      * POST /api/aplicaciones/1/usuarios/asignacion-rol
      */
     @PostMapping("/usuarios/asignacion-rol")
-    public ResponseEntity<RespuestaGenerica<Void>> gestionarRolUsuario(
+    public ResponseEntity<RespuestaGenerica<Void>> asignarRolUsuario(
             @PathVariable Long apliId,
             @Valid @RequestBody GestionarRolUsuarioRequest request,
             BindingResult bindingResult) {
@@ -114,7 +115,46 @@ public class AplicacionController {
         return ResponseEntity.ok(respuesta);
         }
 
-        usuarioService.gestionarRolUsuario(
+        usuarioService.asignarRolUsuario(
+                apliId,
+                request
+        );
+
+        RespuestaGenerica<Void> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        null
+                );
+
+        return ResponseEntity.ok(respuesta);
+    }
+
+
+    /**
+     * Retirar rol a un usuario para una aplicación específica
+     *
+     * Método: DELETE
+     * Ruta: /api/aplicaciones/{apliId}/usuarios/{usuarioRed}
+     *
+     * Ejemplo:
+     * POST /api/aplicaciones/1/usuarios/uuu111
+     */
+    @DeleteMapping("/usuarios/{usuarioRed}")
+    public ResponseEntity<RespuestaGenerica<Void>> retirarRolUsuario(
+            @PathVariable Long apliId,
+            @Valid @RequestBody GestionarRolUsuarioRequest request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            RespuestaGenerica<Void> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null
+                    );
+        return ResponseEntity.ok(respuesta);
+        }
+
+        usuarioService.retirarRolUsuario(
                 apliId,
                 request
         );

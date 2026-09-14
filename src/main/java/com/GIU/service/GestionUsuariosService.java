@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.UsuarioAplicacionDTO;
+import com.giu.model.UsuarioAplicacionResponseDTO;
 import com.giu.model.UsuarioRequestDTO;
 import com.giu.model.UsuarioRolResponseDTO;
 import com.giu.repository.GestionUsuariosRepository;
@@ -29,7 +29,7 @@ public class GestionUsuariosService {
 
         // Método para obtener los usuarios asociados a una aplicación específica según
         // el estado
-        public List<UsuarioAplicacionDTO> obtenerUsuariosPorAplicacion(Long apliId, String estado) {
+        public List<UsuarioAplicacionResponseDTO> obtenerUsuariosPorAplicacion(Long apliId, String estado) {
 
                 return gestionUsuariosRepository.obtenerUsuarioXAplicacion(apliId, estado);
         }
@@ -62,11 +62,24 @@ public class GestionUsuariosService {
                                 request.getUsuarioModificacion());
         }
 
-        // Método para gestionar el rol de un usuario en una aplicación específica
-        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
+        // Método asignar rol a usuario
+        public void asignarRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
 
-                gestionUsuariosRepository.gestionarRolUsuario(apliId, request);
+                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,0);
         }
 
+
+        // Método actualizar vigencia de un rol a usuario
+        public void actualizarVigenciaRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
+
+                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,2);
+        }
+
+
+        // Método retirar rol a un usuario
+        public void retirarRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
+
+                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,1);
+        }
 
 }

@@ -1,6 +1,7 @@
 package com.giu.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -28,7 +29,8 @@ public class UsuarioController {
         private final GestionUsuariosService usuarioService;
         private final GestionSeguridadService gestionSeguridadService;
 
-        public UsuarioController(GestionUsuariosService usuarioService, GestionSeguridadService gestionSeguridadService) {
+        public UsuarioController(GestionUsuariosService usuarioService,
+                        GestionSeguridadService gestionSeguridadService) {
                 this.usuarioService = usuarioService;
                 this.gestionSeguridadService = gestionSeguridadService;
         }
@@ -140,22 +142,27 @@ public class UsuarioController {
          * * }
          */
         @PutMapping("/gestionar-estado")
-        public ResponseEntity<RespuestaGenerica<Void>> gestionarEstadoUsuario(
+        public ResponseEntity<RespuestaGenerica<List<String>>> gestionarEstadoUsuario(
                         @Valid @RequestBody GestionarEstadoUsuarioRequest request,
                         BindingResult bindingResult) {
 
                 if (bindingResult.hasErrors()) {
 
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
+                        List<String> errores = bindingResult.getFieldErrors()
+                                        .stream()
+                                        .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                                        .collect(Collectors.toList());
+
+                        RespuestaGenerica<List<String>> respuesta = new RespuestaGenerica<>(
                                         TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
+                                        errores);
 
                         return ResponseEntity.ok(respuesta);
                 }
-                gestionSeguridadService.gestionarEstadoUsuario(
-                                request);
 
-                RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
+                gestionSeguridadService.gestionarEstadoUsuario(request);
+
+                RespuestaGenerica<List<String>> respuesta = new RespuestaGenerica<>(
                                 TipoRespuesta.EXITOSO,
                                 null);
 
