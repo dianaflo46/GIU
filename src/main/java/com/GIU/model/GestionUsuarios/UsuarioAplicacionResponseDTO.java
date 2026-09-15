@@ -1,4 +1,4 @@
-package com.giu.model;
+package com.giu.model.GestionUsuarios;
 
 import java.time.LocalDateTime;
 
@@ -13,7 +13,7 @@ public class UsuarioAplicacionResponseDTO {
     private String correo;
     private String numeroIdentificacion;
     private String estadoUsua;
-    private String esSuperAdmin;
+    private Integer esSuperAdmin;
     private LocalDateTime fechaCreacion;
     private String usuarioCreacion;
     private LocalDateTime fechaModificacion;

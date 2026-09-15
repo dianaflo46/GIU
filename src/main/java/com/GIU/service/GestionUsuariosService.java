@@ -4,10 +4,12 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.UsuarioAplicacionResponseDTO;
-import com.giu.model.UsuarioRequestDTO;
-import com.giu.model.UsuarioRolResponseDTO;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
+import com.giu.model.GestionUsuarios.GestionarRolesUsuariosRequest;
+import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
+import com.giu.model.GestionUsuarios.UsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.UsuarioRolRequest;
+import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
 import com.giu.repository.GestionUsuariosRepository;
 
 @Service
@@ -48,6 +50,7 @@ public class GestionUsuariosService {
                                 request.getNombre(),
                                 request.getCorreo(),
                                 request.getNumeroIdentificacion(),
+                                request.getSuperAdministrador(),
                                 request.getUsuarioCreacion());
         }
 
@@ -59,27 +62,40 @@ public class GestionUsuariosService {
                                 request.getNombre(),
                                 request.getCorreo(),
                                 request.getNumeroIdentificacion(),
+                                request.getSuperAdministrador(),
                                 request.getUsuarioModificacion());
         }
 
         // Método asignar rol a usuario
-        public void asignarRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
+        public void asignarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
 
-                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,0);
+                gestionUsuariosRepository.gestionarRolUsuario(apliId, request, 0);
         }
-
 
         // Método actualizar vigencia de un rol a usuario
-        public void actualizarVigenciaRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
+        public void actualizarVigenciaRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
 
-                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,2);
+                gestionUsuariosRepository.gestionarRolUsuario(apliId, request, 2);
         }
 
-
         // Método retirar rol a un usuario
-        public void retirarRolUsuario(Long apliId,GestionarRolUsuarioRequest request) {
+        public void retirarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
 
-                gestionUsuariosRepository.gestionarRolUsuario(apliId,request,1);
+                gestionUsuariosRepository.gestionarRolUsuario(apliId, request, 1);
+        }
+
+        public void retirarRolesUsuarios(Long apliId, GestionarRolesUsuariosRequest request) {
+
+                for (UsuarioRolRequest usuario : request.getUsuariosRed()) {
+
+                        GestionarRolUsuarioRequest rolRequest = new GestionarRolUsuarioRequest();
+
+                        rolRequest.setUsuarioRed(usuario.getUsuarioRed());
+                        rolRequest.setRolId(usuario.getRolId());
+                        rolRequest.setUsuarioModificacion(request.getUsuarioModificacion());
+
+                        gestionUsuariosRepository.gestionarRolUsuario(apliId, rolRequest, 1);
+                }
         }
 
 }

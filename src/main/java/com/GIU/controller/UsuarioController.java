@@ -17,8 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.giu.utils.RespuestaGenerica;
 import com.giu.utils.TipoRespuesta;
-import com.giu.model.GestionarEstadoUsuarioRequest;
-import com.giu.model.UsuarioRequestDTO;
+import com.giu.model.GestionSeguridad.GestionarEstadoUsuarioRequest;
+import com.giu.model.GestionUsuarios.UsuarioRequestDTO;
 import com.giu.service.GestionSeguridadService;
 import com.giu.service.GestionUsuariosService;
 

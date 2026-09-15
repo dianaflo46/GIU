@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 
 import org.springframework.stereotype.Service;
 
-import com.giu.model.GestionarEstadoUsuarioRequest;
-import com.giu.model.GestionarRolUsuarioRequest;
+import com.giu.model.GestionSeguridad.GestionarEstadoUsuarioRequest;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
 import com.giu.repository.GestionSeguridadRepository;
 
 @Service
@@ -26,8 +26,7 @@ public class GestionSeguridadService {
     public void gestionarEstadoUsuario(
             GestionarEstadoUsuarioRequest request) {
 
-        gestionSeguridadRepository.gestionarEstadoUsuario(
-                request);
+        gestionSeguridadRepository.gestionarEstadoUsuario(request);
         if (request.getOperacion() == 0 && request.getRolId() != null) {
             GestionarRolUsuarioRequest requestRol = new GestionarRolUsuarioRequest();
 
@@ -37,9 +36,7 @@ public class GestionSeguridadService {
             requestRol.setFechaFin(null);
             requestRol.setUsuarioModificacion(request.getUsuarioModificacion());
 
-gestionUsuariosService.asignarRolUsuario(
-        request.getApliId(),
-        requestRol);
+            gestionUsuariosService.asignarRolUsuario(request.getApliId(),requestRol);
         }
     }
 }

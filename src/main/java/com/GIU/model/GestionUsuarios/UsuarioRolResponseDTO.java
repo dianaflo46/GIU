@@ -1,4 +1,4 @@
-package com.giu.model;
+package com.giu.model.GestionUsuarios;
 
 import java.time.LocalDateTime;
 import lombok.Data;

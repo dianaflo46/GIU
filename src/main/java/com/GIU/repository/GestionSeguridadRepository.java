@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.giu.model.GestionarEstadoUsuarioRequest;
+import com.giu.model.GestionSeguridad.GestionarEstadoUsuarioRequest;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
 
@@ -16,65 +16,59 @@ import oracle.jdbc.OracleTypes;
 @Repository
 public class GestionSeguridadRepository {
 
-    private static final Logger logger =
-            LogManager.getLogger(Constantes.APLICACION);
+        private static final Logger logger = LogManager.getLogger(Constantes.APLICACION);
 
-    public void gestionarEstadoUsuario(
-            GestionarEstadoUsuarioRequest request) {
+        public void gestionarEstadoUsuario(
+                        GestionarEstadoUsuarioRequest request) {
 
-        try (Connection conn =
-                utilsBD.obtenerConexion(
-                        Constantes.NOMBRE_BD_GIU)) {
+                try (Connection conn = utilsBD.obtenerConexion(
+                                Constantes.NOMBRE_BD_GIU)) {
 
-            String sql =
-                    "{ call PKG_GIU_GESTION_SEGURIDAD.PRC_GESTIONAR_ESTADO_USUARIO("
-                            + "?, ?, ?, ?, ?) }";
+                        String sql = "{ call PKG_GIU_GESTION_SEGURIDAD.PRC_GESTIONAR_ESTADO_USUARIO("
+                                        + "?, ?, ?, ?, ?) }";
 
-            try (CallableStatement stmt =
-                    conn.prepareCall(sql)) {
+                        try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                stmt.setLong(
-                        1,
-                        request.getApliId());
+                                stmt.setLong(
+                                                1,
+                                                request.getApliId());
 
-                stmt.setString(
-                        2,
-                        request.getUsuarioRed());
+                                stmt.setString(
+                                                2,
+                                                request.getUsuarioRed());
 
-                stmt.setInt(
-                        3,
-                        request.getOperacion());
+                                stmt.setInt(
+                                                3,
+                                                request.getOperacion());
 
-                stmt.registerOutParameter(
-                        4,
-                        OracleTypes.NUMBER);
+                                stmt.registerOutParameter(
+                                                4,
+                                                OracleTypes.NUMBER);
 
-                stmt.registerOutParameter(
-                        5,
-                        OracleTypes.VARCHAR);
+                                stmt.registerOutParameter(
+                                                5,
+                                                OracleTypes.VARCHAR);
 
-                stmt.execute();
+                                stmt.execute();
 
-                int codigoSalida =
-                        stmt.getInt(4);
+                                int codigoSalida = stmt.getInt(4);
 
-                String mensajeSalida =
-                        stmt.getString(5);
+                                String mensajeSalida = stmt.getString(5);
 
-                utilsBD.validarResultado(
-                        codigoSalida,
-                        mensajeSalida);
-            }
+                                utilsBD.validarResultado(
+                                                codigoSalida,
+                                                mensajeSalida);
+                        }
 
-        } catch (Exception e) {
+                } catch (Exception e) {
 
-            logger.error(
-                    "Error gestionando estado del usuario: {}",
-                    request.getUsuarioRed(),
-                    request.getOperacion(),
-                    e);
+                        logger.error(
+                                        "Error gestionando estado del usuario: {}",
+                                        request.getUsuarioRed(),
+                                        request.getOperacion(),
+                                        e);
 
-            throw new RuntimeException(e);
+                        throw new RuntimeException(e);
+                }
         }
-    }
 }

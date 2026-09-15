@@ -1,21 +1,21 @@
-package com.giu.model;
+package com.giu.model.GestionAplicaciones;
 
 import java.time.LocalDateTime;
 
-
 import lombok.Data;
 
-
 @Data
-public class RolResponseDTO {
+public class AplicacionResponseDTO {
 
     private Long id;
-    private Long apliId;
     private String nombre;
+    private String codigo;
     private String descripcion;
     private String estado;
+    private String administracion;
     private LocalDateTime fechaCreacion;
     private String usuarioCreacion;
     private LocalDateTime fechaModificacion;
     private String usuarioModificacion;
 }
+

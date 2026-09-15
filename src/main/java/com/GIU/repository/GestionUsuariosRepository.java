@@ -12,10 +12,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.UsuarioAplicacionResponseDTO;
-import com.giu.model.UsuarioRequestDTO;
-import com.giu.model.UsuarioRolResponseDTO;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
+import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
+import com.giu.model.GestionUsuarios.UsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
 import com.giu.utils.FechaUtils;
@@ -26,7 +26,7 @@ public class GestionUsuariosRepository {
 
         private static final Logger logger = LogManager.getLogger("GIU");
 
-        // Consultar usuarios
+        // Consultar usuarios -> FN_OBTENER_USUARIO
         public List<UsuarioRequestDTO> obtenerUsuarios(String usuarioRed, String estado) {
 
                 List<UsuarioRequestDTO> usuarios = new ArrayList<>();
@@ -39,11 +39,8 @@ public class GestionUsuariosRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.registerOutParameter(1, OracleTypes.CURSOR);
-
                                 stmt.setString(2, usuarioRed);
-
                                 stmt.setString(3, estado);
-
                                 stmt.setNull(4, Types.NUMERIC);
 
                                 stmt.execute();
@@ -54,39 +51,19 @@ public class GestionUsuariosRepository {
 
                                                 UsuarioRequestDTO usuario = new UsuarioRequestDTO();
 
-                                                usuario.setId(
-                                                                rs.getLong("ID"));
-
-                                                usuario.setUsuarioRed(
-                                                                rs.getString("USUARIO_RED"));
-
-                                                usuario.setNombre(
-                                                                rs.getString("NOMBRE"));
-
-                                                usuario.setCorreo(
-                                                                rs.getString("CORREO"));
-
-                                                usuario.setEstado(
-                                                                rs.getString("ESTADO"));
-
-                                                usuario.setNumeroIdentificacion(
-                                                                rs.getString("NUMERO_IDENTIFICACION"));
-
-                                                usuario.setSuperAdministrador(
-                                                                rs.getString("SUPER_ADMINISTRADOR"));
-
+                                                usuario.setId(rs.getLong("ID"));
+                                                usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
+                                                usuario.setNombre(rs.getString("NOMBRE"));
+                                                usuario.setCorreo(rs.getString("CORREO"));
+                                                usuario.setEstado(rs.getString("ESTADO"));
+                                                usuario.setNumeroIdentificacion(rs.getString("NUMERO_IDENTIFICACION"));
+                                                usuario.setSuperAdministrador(rs.getInt("SUPER_ADMINISTRADOR"));
                                                 usuario.setFechaCreacion(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_CREACION")));
-
-                                                usuario.setUsuarioCreacion(
-                                                                rs.getString("USUARIO_CREACION"));
-
+                                                usuario.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
                                                 usuario.setFechaModificacion(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_MODIFICACION")));
-
-                                                usuario.setUsuarioModificacion(
-                                                                rs.getString("USUARIO_MODIFICACION"));
-
+                                                usuario.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
                                                 usuarios.add(usuario);
                                         }
                                 }
@@ -94,36 +71,30 @@ public class GestionUsuariosRepository {
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error consultando usuarios",
-                                        e);
+                        logger.error("Error consultando usuarios", e);
 
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Error consultando usuarios", e);
                 }
 
                 return usuarios;
         }
 
-        // Consultar usuarios asociados a una aplicación
+        // Consultar usuarios asociados a una aplicación ->
+        // FN_OBTENER_USUARIO_X_APLICACION
         public List<UsuarioAplicacionResponseDTO> obtenerUsuarioXAplicacion(Long apliId, String estado) {
 
                 List<UsuarioAplicacionResponseDTO> usuarios = new ArrayList<>();
 
-                try (Connection conn = utilsBD.obtenerConexion(
-                                Constantes.NOMBRE_BD_GIU)) {
+                try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
 
                         String sql = "{ ? = call PKG_GIU_GESTION_USUARIOS.FN_OBTENER_USUARIO_X_APLICACION(?, ?, ?, ?) }";
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.registerOutParameter(1, OracleTypes.CURSOR);
-
                                 stmt.setNull(2, Types.VARCHAR);
-
                                 stmt.setObject(3, apliId);
-
                                 stmt.setString(4, estado);
-
                                 stmt.setNull(5, Types.VARCHAR);
 
                                 stmt.execute();
@@ -134,60 +105,28 @@ public class GestionUsuariosRepository {
 
                                                 UsuarioAplicacionResponseDTO usuario = new UsuarioAplicacionResponseDTO();
 
-                                                usuario.setId(
-                                                                rs.getLong("ID"));
-
-                                                usuario.setUsuarioRed(
-                                                                rs.getString("USUARIO_RED"));
-
-                                                usuario.setNombre(
-                                                                rs.getString("NOMBRE"));
-
-                                                usuario.setCorreo(
-                                                                rs.getString("CORREO"));
-
-                                                usuario.setNumeroIdentificacion(
-                                                                rs.getString("NUMERO_IDENTIFICACION"));
-
-                                                usuario.setEstadoUsua(
-                                                                rs.getString("ESTADO_USUA"));
-
-                                                usuario.setEsSuperAdmin(
-                                                                rs.getString("ES_SUPER_ADMIN"));
-
+                                                usuario.setId(rs.getLong("ID"));
+                                                usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
+                                                usuario.setNombre(rs.getString("NOMBRE"));
+                                                usuario.setCorreo(rs.getString("CORREO"));
+                                                usuario.setNumeroIdentificacion(rs.getString("NUMERO_IDENTIFICACION"));
+                                                usuario.setEstadoUsua(rs.getString("ESTADO_USUA"));
+                                                usuario.setEsSuperAdmin(rs.getInt("ES_SUPER_ADMIN"));
                                                 usuario.setFechaCreacion(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_CREACION")));
-
-                                                usuario.setUsuarioCreacion(
-                                                                rs.getString("USUARIO_CREACION"));
-
+                                                usuario.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
                                                 usuario.setFechaModificacion(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_MODIFICACION")));
-
-                                                usuario.setUsuarioModificacion(
-                                                                rs.getString("USUARIO_MODIFICACION"));
-
-                                                usuario.setCodigoApli(
-                                                                rs.getString("CODIGO_APLI"));
-
-                                                usuario.setNombreApli(
-                                                                rs.getString("NOMBRE_APLI"));
-
-                                                usuario.setEstadoApli(
-                                                                rs.getString("ESTADO_APLI"));
-
-                                                usuario.setIdRol(
-                                                                rs.getObject("ID_ROL", Long.class));
-
-                                                usuario.setNombreRol(
-                                                                rs.getString("NOMBRE_ROL"));
-
+                                                usuario.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+                                                usuario.setCodigoApli(rs.getString("CODIGO_APLI"));
+                                                usuario.setNombreApli(rs.getString("NOMBRE_APLI"));
+                                                usuario.setEstadoApli(rs.getString("ESTADO_APLI"));
+                                                usuario.setIdRol(rs.getObject("ID_ROL", Long.class));
+                                                usuario.setNombreRol(rs.getString("NOMBRE_ROL"));
                                                 usuario.setFechaInRol(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_IN_ROL")));
-
                                                 usuario.setFechaFinRol(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_FIN_ROL")));
-
                                                 usuarios.add(usuario);
                                         }
                                 }
@@ -195,9 +134,7 @@ public class GestionUsuariosRepository {
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error consultando usuarios asociados a la aplicación",
-                                        e);
+                        logger.error("Error consultando usuarios asociados a la aplicación", e);
 
                         throw new RuntimeException(e);
                 }
@@ -205,7 +142,7 @@ public class GestionUsuariosRepository {
                 return usuarios;
         }
 
-        // Consultar rol de un usuario en una aplicación
+        // Consultar rol de un usuario en una aplicación -> FN_OBTENER_ROL_USUARIO
         public UsuarioRolResponseDTO obtenerRolUsuario(String usuarioRed, Long apliId) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
@@ -216,13 +153,9 @@ public class GestionUsuariosRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.registerOutParameter(1, OracleTypes.CURSOR);
-
                                 stmt.setString(2, usuarioRed);
-
                                 stmt.setLong(3, apliId);
-
                                 stmt.setNull(4, Types.NUMERIC);
-
                                 stmt.execute();
 
                                 try (ResultSet rs = (ResultSet) stmt.getObject(1)) {
@@ -231,21 +164,13 @@ public class GestionUsuariosRepository {
 
                                                 UsuarioRolResponseDTO usuarioRol = new UsuarioRolResponseDTO();
 
-                                                usuarioRol.setUsuarioRed(
-                                                                rs.getString("USUA_USUARIO_RED"));
-
-                                                usuarioRol.setApliId(
-                                                                rs.getLong("APLI_ID"));
-
-                                                usuarioRol.setRolId(
-                                                                rs.getLong("ROL_ID"));
-
+                                                usuarioRol.setUsuarioRed(rs.getString("USUA_USUARIO_RED"));
+                                                usuarioRol.setApliId(rs.getLong("APLI_ID"));
+                                                usuarioRol.setRolId(rs.getLong("ROL_ID"));
                                                 usuarioRol.setFechaIn(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_IN")));
-
                                                 usuarioRol.setFechaFin(FechaUtils.convertirFecha(
                                                                 rs.getTimestamp("FECHA_FIN")));
-
                                                 return usuarioRol;
                                         }
                                 }
@@ -255,21 +180,19 @@ public class GestionUsuariosRepository {
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error consultando rol del usuario: {}",
-                                        usuarioRed,
-                                        e);
+                        logger.error("Error consultando rol del usuario: {}", usuarioRed, e);
 
                         throw new RuntimeException(e);
                 }
         }
 
-        // Crear usuario
+        // Crear usuario -> PRC_CREAR_USUARIO
         public void crearUsuario(
                         String usuarioRed,
                         String nombre,
                         String correo,
                         String numeroIdentificacion,
+                        Integer superAdministrador,
                         String usuarioCreacion) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
@@ -280,51 +203,39 @@ public class GestionUsuariosRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.setString(1, usuarioRed);
-
                                 stmt.setString(2, nombre);
-
                                 stmt.setString(3, correo);
-
                                 stmt.setString(4, numeroIdentificacion);
-
-                                stmt.setInt(5, 0);
-
+                                stmt.setInt(5, superAdministrador);
                                 stmt.setString(6, usuarioCreacion);
 
                                 stmt.registerOutParameter(7, OracleTypes.CURSOR);
-
                                 stmt.registerOutParameter(8, OracleTypes.NUMBER);
-
                                 stmt.registerOutParameter(9, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
                                 int codigoSalida = stmt.getInt(8);
-
                                 String mensajeSalida = stmt.getString(9);
-
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
-                                try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-                                }
                         }
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error creando usuario",
-                                        e);
+                        logger.error("Error creando usuario", e);
 
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Error creando usuario", e);
                 }
         }
 
-        // Modificar usuario
+        // Modificar usuario -> PRC_MODIFICAR_USUARIO
         public void modificarUsuario(
                         String usuarioRed,
                         String nombre,
                         String correo,
                         String numeroIdentificacion,
+                        Integer superAdministrador,
                         String usuarioModificacion) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
@@ -335,46 +246,38 @@ public class GestionUsuariosRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.setString(1, usuarioRed);
-
                                 stmt.setString(2, nombre);
-
                                 stmt.setString(3, correo);
-
                                 stmt.setString(4, numeroIdentificacion);
 
-                                stmt.setNull(5, Types.NUMERIC);
+                                if (superAdministrador != null) {
+                                        stmt.setInt(5, superAdministrador);
+                                } else {
+                                        stmt.setNull(5, Types.NUMERIC);
+                                }
 
                                 stmt.setString(6, usuarioModificacion);
-
                                 stmt.registerOutParameter(7, OracleTypes.CURSOR);
-
                                 stmt.registerOutParameter(8, OracleTypes.NUMBER);
-
                                 stmt.registerOutParameter(9, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
                                 int codigoSalida = stmt.getInt(8);
-
                                 String mensajeSalida = stmt.getString(9);
-
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
-                                try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-                                }
                         }
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error modificando usuario",
-                                        e);
+                        logger.error("Error modificando usuario", e);
 
-                        throw new RuntimeException(e);
+                        throw new RuntimeException("Error modificando usuario", e);
                 }
         }
 
-        // Gestionar rol de un usuario en una aplicación
+        // Gestionar rol de un usuario en una aplicación -> PRC_GESTIONAR_ROL_USUARIO
         public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request, Integer operacion) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
@@ -385,55 +288,39 @@ public class GestionUsuariosRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.setLong(1, apliId);
-
                                 stmt.setLong(2, request.getRolId());
-
                                 stmt.setString(3, request.getUsuarioRed());
-
                                 stmt.setInt(4, operacion);
 
                                 if (request.getFechaIn() != null) {
-
                                         stmt.setTimestamp(5, Timestamp.valueOf(request.getFechaIn()));
-
                                 } else {
-
                                         stmt.setNull(5, Types.TIMESTAMP);
                                 }
 
                                 if (request.getFechaFin() != null) {
-
                                         stmt.setTimestamp(6, Timestamp.valueOf(request.getFechaFin()));
-
                                 } else {
-
                                         stmt.setNull(6, Types.TIMESTAMP);
                                 }
 
                                 stmt.setString(7, request.getUsuarioModificacion());
 
                                 stmt.registerOutParameter(8, OracleTypes.CURSOR);
-
                                 stmt.registerOutParameter(9, OracleTypes.NUMBER);
-
                                 stmt.registerOutParameter(10, OracleTypes.VARCHAR);
 
                                 stmt.execute();
 
                                 int codigoSalida = stmt.getInt(9);
-
                                 String mensajeSalida = stmt.getString(10);
-
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
-                                try (ResultSet rs = (ResultSet) stmt.getObject(8)) {
-                                }
                         }
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error gestionando rol {} del usuario {} en la aplicación {}",
+                        logger.error("Error gestionando rol {} del usuario {} en la aplicación {}",
                                         request.getRolId(),
                                         request.getUsuarioRed(),
                                         apliId,
@@ -443,7 +330,5 @@ public class GestionUsuariosRepository {
                         throw new RuntimeException(e);
                 }
         }
-
-        
 
 }

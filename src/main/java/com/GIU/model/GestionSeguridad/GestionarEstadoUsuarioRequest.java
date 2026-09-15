@@ -1,4 +1,4 @@
-package com.giu.model;
+package com.giu.model.GestionSeguridad;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;

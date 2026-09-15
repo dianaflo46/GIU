@@ -9,7 +9,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.giu.model.RolResponseDTO;
+import com.giu.model.GestionRoles.RolResponseDTO;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
 
@@ -24,7 +24,7 @@ public class GestionRolesRepository {
         // Se define un logger para registrar eventos y errores en la aplicación
         private static final Logger logger = LogManager.getLogger(Constantes.APLICACION);
 
-        // Consultar los roles activos de una aplicación especifica
+        // Consultar los roles activos de una aplicación especifica -> FN_OBTENER_ROL
         public List<RolResponseDTO> obtenerRoles(Long apliId) {
 
                 List<RolResponseDTO> roles = new ArrayList<>();
@@ -36,11 +36,8 @@ public class GestionRolesRepository {
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
                                 stmt.registerOutParameter(1, OracleTypes.CURSOR);
-
                                 stmt.setNull(2, Types.NUMERIC);
-
                                 stmt.setLong(3, apliId);
-
                                 stmt.setString(4, "ACTIVO");
 
                                 stmt.execute();
@@ -51,33 +48,17 @@ public class GestionRolesRepository {
 
                                                 RolResponseDTO rol = new RolResponseDTO();
 
-                                                rol.setId(
-                                                                rs.getLong("ID"));
-
-                                                rol.setApliId(
-                                                                rs.getLong("APLI_ID"));
-
-                                                rol.setNombre(
-                                                                rs.getString("NOMBRE"));
-
-                                                rol.setDescripcion(
-                                                                rs.getString("DESCRIPCION"));
-
-                                                rol.setEstado(
-                                                                rs.getString("ESTADO"));
-
+                                                rol.setId(rs.getLong("ID"));
+                                                rol.setApliId(rs.getLong("APLI_ID"));
+                                                rol.setNombre(rs.getString("NOMBRE"));
+                                                rol.setDescripcion(rs.getString("DESCRIPCION"));
+                                                rol.setEstado(rs.getString("ESTADO"));
                                                 rol.setFechaCreacion(FechaUtils.convertirFecha(
-                                                                                rs.getTimestamp("FECHA_CREACION")));
-
-                                                rol.setUsuarioCreacion(
-                                                                rs.getString("USUARIO_CREACION"));
-
+                                                                rs.getTimestamp("FECHA_CREACION")));
+                                                rol.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
                                                 rol.setFechaModificacion(FechaUtils.convertirFecha(
-                                                                                rs.getTimestamp("FECHA_MODIFICACION")));
-
-                                                rol.setUsuarioModificacion(
-                                                                rs.getString("USUARIO_MODIFICACION"));
-
+                                                                rs.getTimestamp("FECHA_MODIFICACION")));
+                                                rol.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
                                                 roles.add(rol);
                                         }
                                 }
@@ -85,14 +66,9 @@ public class GestionRolesRepository {
 
                 } catch (Exception e) {
 
-                        logger.error(
-                                        "Error consultando roles de la aplicación: {}",
-                                        apliId,
-                                        e);
+                        logger.error("Error consultando roles de la aplicación: {}", apliId, e);
 
-                        throw new RuntimeException(
-                                        "Error consultando roles de la aplicación",
-                                        e);
+                        throw new RuntimeException("Error consultando roles de la aplicación", e);
                 }
 
                 return roles;
