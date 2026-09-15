@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.giu.model.GestionRecursos.RecursoDTO;
 import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
 
 import lombok.Data;

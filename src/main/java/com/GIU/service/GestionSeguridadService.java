@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 
 import com.giu.model.GestionSeguridad.GestionarEstadoUsuarioRequest;
-import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
 import com.giu.repository.GestionSeguridadRepository;
 
 @Service
@@ -24,19 +24,18 @@ public class GestionSeguridadService {
 
     // Método para gestionar el estado de un usuario en el sistema
     public void gestionarEstadoUsuario(
-            GestionarEstadoUsuarioRequest request) {
+            GestionarEstadoUsuarioRequest request, String usuarioModificacion) {
 
         gestionSeguridadRepository.gestionarEstadoUsuario(request);
         if (request.getOperacion() == 0 && request.getRolId() != null) {
-            GestionarRolUsuarioRequest requestRol = new GestionarRolUsuarioRequest();
+            GestionarRolUsuarioRequestDTO requestRol = new GestionarRolUsuarioRequestDTO();
 
             requestRol.setRolId(request.getRolId());
             requestRol.setUsuarioRed(request.getUsuarioRed());
             requestRol.setFechaIn(LocalDateTime.now());
             requestRol.setFechaFin(null);
-            requestRol.setUsuarioModificacion(request.getUsuarioModificacion());
 
-            gestionUsuariosService.asignarRolUsuario(request.getApliId(),requestRol);
+            gestionUsuariosService.asignarRolUsuario(request.getApliId(),requestRol,usuarioModificacion);
         }
     }
 }

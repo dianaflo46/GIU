@@ -83,9 +83,7 @@ public class GestionAplicacionesRepository {
         return aplicaciones;
     }
 
-    // Consulta los administradores asociados a una aplicación ->
-    // FN_OBTENER_ADMINISTRADOR_APLICACION
-
+    // Consulta los administradores asociados a una aplicación -> FN_OBTENER_ADMINISTRADOR_APLICACION
     public List<AdministradorAplicacionResponseDTO> obtenerAdministradorAplicacion(
             String usuarioRed,
             Long apliId) {

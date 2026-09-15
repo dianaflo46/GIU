@@ -11,12 +11,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.giu.model.GestionRoles.RolResponseDTO;
-import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
-import com.giu.model.GestionUsuarios.GestionarRolesUsuariosRequest;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.GestionarRolesUsuariosRequestDTO;
 import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
 import com.giu.service.GestionRolesService;
 import com.giu.service.GestionUsuariosService;
@@ -96,8 +97,9 @@ public class AplicacionController {
          */
         @PostMapping("/usuarios/asignacion-rol")
         public ResponseEntity<RespuestaGenerica<Void>> asignarRolUsuario(
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolUsuarioRequest request,
+                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
                         BindingResult bindingResult) {
 
                 if (bindingResult.hasErrors()) {
@@ -109,7 +111,8 @@ public class AplicacionController {
 
                 usuarioService.asignarRolUsuario(
                                 apliId,
-                                request);
+                                request,
+                                usuarioModificacion);
 
                 RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
                                 TipoRespuesta.EXITOSO,
@@ -125,12 +128,14 @@ public class AplicacionController {
          * Ruta: /api/aplicaciones/{apliId}/usuarios/{usuarioRed}
          *
          * Ejemplo:
-         * POST /api/aplicaciones/1/usuarios/uuu111
+         * DELETE /api/aplicaciones/1/usuarios/uuu111
          */
         @DeleteMapping("/usuarios/{usuarioRed}")
         public ResponseEntity<RespuestaGenerica<Void>> retirarRolUsuario(
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolUsuarioRequest request,
+                        @PathVariable String usuarioRed,
+                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
                         BindingResult bindingResult) {
 
                 if (bindingResult.hasErrors()) {
@@ -140,9 +145,12 @@ public class AplicacionController {
                         return ResponseEntity.ok(respuesta);
                 }
 
+                request.setUsuarioRed(usuarioRed);
+
                 usuarioService.retirarRolUsuario(
                                 apliId,
-                                request);
+                                request,
+                                usuarioModificacion);
 
                 RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
                                 TipoRespuesta.EXITOSO,
@@ -155,15 +163,16 @@ public class AplicacionController {
          * Retirar rol a un usuario para una aplicación específica
          *
          * Método: DELETE
-         * Ruta: /api/aplicaciones/{apliId}/usuarios/{usuarioRed}
+         * Ruta: /api/aplicaciones/{apliId}/usuario
          *
          * Ejemplo:
-         * POST /api/aplicaciones/1/usuarios/uuu111
+         * DELETE /api/aplicaciones/1/usuario
          */
         @DeleteMapping("/usuario")
         public ResponseEntity<RespuestaGenerica<Void>> retirarRolesUsuarios(
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolesUsuariosRequest request,
+                        @Valid @RequestBody GestionarRolesUsuariosRequestDTO request,
                         BindingResult bindingResult) {
 
                 if (bindingResult.hasErrors()) {
@@ -173,7 +182,7 @@ public class AplicacionController {
                         return ResponseEntity.ok(respuesta);
                 }
 
-                usuarioService.retirarRolesUsuarios(apliId, request);
+                usuarioService.retirarRolesUsuarios(apliId, request, usuarioModificacion);
 
                 RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
                                 TipoRespuesta.EXITOSO,

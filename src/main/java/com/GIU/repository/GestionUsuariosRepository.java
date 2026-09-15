@@ -12,9 +12,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequest;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
 import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
-import com.giu.model.GestionUsuarios.UsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.UsuarioResponseDTO;
 import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
@@ -27,9 +27,9 @@ public class GestionUsuariosRepository {
         private static final Logger logger = LogManager.getLogger("GIU");
 
         // Consultar usuarios -> FN_OBTENER_USUARIO
-        public List<UsuarioRequestDTO> obtenerUsuarios(String usuarioRed, String estado) {
+        public List<UsuarioResponseDTO> obtenerUsuarios(String usuarioRed, String estado) {
 
-                List<UsuarioRequestDTO> usuarios = new ArrayList<>();
+                List<UsuarioResponseDTO> usuarios = new ArrayList<>();
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -49,7 +49,7 @@ public class GestionUsuariosRepository {
 
                                         while (rs.next()) {
 
-                                                UsuarioRequestDTO usuario = new UsuarioRequestDTO();
+                                                UsuarioResponseDTO usuario = new UsuarioResponseDTO();
 
                                                 usuario.setId(rs.getLong("ID"));
                                                 usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
@@ -278,7 +278,7 @@ public class GestionUsuariosRepository {
         }
 
         // Gestionar rol de un usuario en una aplicación -> PRC_GESTIONAR_ROL_USUARIO
-        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request, Integer operacion) {
+        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request,String usuarioModificacion, Integer operacion) {
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
@@ -304,7 +304,7 @@ public class GestionUsuariosRepository {
                                         stmt.setNull(6, Types.TIMESTAMP);
                                 }
 
-                                stmt.setString(7, request.getUsuarioModificacion());
+                                stmt.setString(7, usuarioModificacion);
 
                                 stmt.registerOutParameter(8, OracleTypes.CURSOR);
                                 stmt.registerOutParameter(9, OracleTypes.NUMBER);

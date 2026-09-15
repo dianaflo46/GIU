@@ -6,10 +6,11 @@ import javax.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class UsuarioRolRequest {
-    @NotBlank
+public class UsuarioRolRequestDTO {
+
+    @NotBlank(message = "El usuario de red es obligatorio")
     private String usuarioRed;
 
-    @NotNull
+    @NotNull(message = "El id de rol es obligatorio")
     private Long rolId;
 }
