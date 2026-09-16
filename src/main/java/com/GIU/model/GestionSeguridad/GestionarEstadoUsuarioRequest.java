@@ -1,4 +1,4 @@
-package com.giu.model;
+package com.giu.model.GestionSeguridad;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -14,13 +14,13 @@ public class GestionarEstadoUsuarioRequest {
     private Long apliId;
 
     @NotBlank(message = "El usuario de red es obligatorio")
-    private String UsuarioRed;
+    private String usuarioRed;
 
     @NotNull(message = "La operación es obligatoria")
     private Integer operacion;
 
     @NotNull(message = "El id del rol es obligatorio")
-    private String rolId; 
+    private Long rolId; 
 
     @NotNull(message = "El usuario de modificación es obligatorio")
     private String usuarioModificacion;

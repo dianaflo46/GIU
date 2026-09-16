@@ -4,12 +4,15 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.giu.model.GestionRecursos.RecursoDTO;
+import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
+
 import lombok.Data;
 
 @Data
 @Valid
 public class LoginResponseDTO {
-    private UsuarioAplicacionDTO usuario;
+    private UsuarioAplicacionResponseDTO usuario;
     private boolean superAdmin;
     private List<RecursoDTO> permisos;
     

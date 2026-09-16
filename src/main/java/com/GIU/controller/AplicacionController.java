@@ -5,127 +5,171 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.RolResponseDTO;
-import com.giu.model.UsuarioRolResponseDTO;
-import com.giu.service.GestionRolesService;
-import com.giu.service.GestionUsuariosService;
+import com.giu.model.GestionAplicaciones.AdministradorAplicacionResponseDTO;
+import com.giu.model.GestionAplicaciones.AplicacionResponseDTO;
+import com.giu.model.GestionAplicaciones.CrearAplicacionRequest;
+import com.giu.model.GestionAplicaciones.GestionarAdministradorRequest;
+import com.giu.model.GestionAplicaciones.ModificarAplicacionRequest;
+import com.giu.service.GestionAplicacionesService;
 import com.giu.utils.RespuestaGenerica;
 import com.giu.utils.TipoRespuesta;
 
 @RestController
-@RequestMapping("/api/aplicaciones/{apliId}")
+@RequestMapping("/api/aplicaciones")
 public class AplicacionController {
 
-    private final GestionUsuariosService usuarioService;
-    private final GestionRolesService rolesService;
+        private final GestionAplicacionesService aplicacionesService;
 
-    public AplicacionController(
-            GestionUsuariosService usuarioService,
-            GestionRolesService rolesService) {
+        public AplicacionController(
+                        GestionAplicacionesService aplicacionesService) {
 
-        this.usuarioService = usuarioService;
-        this.rolesService = rolesService;
-    }
-
-    /**
-     * Consultar roles de una aplicación
-     *
-     * Método: GET
-     * Ruta: /api/aplicaciones/{apliId}/roles
-     *
-     * Ejemplo:
-     * GET /api/aplicaciones/1/roles
-     */
-    @GetMapping("/roles")
-    public ResponseEntity<RespuestaGenerica<List<RolResponseDTO>>> obtenerRoles(
-            @PathVariable Long apliId) {
-
-        List<RolResponseDTO> roles =
-                rolesService.obtenerRoles(apliId);
-
-        RespuestaGenerica<List<RolResponseDTO>> respuesta =
-                new RespuestaGenerica<>(
-                        TipoRespuesta.EXITOSO,
-                        roles
-                );
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Consultar asignación de rol de un usuario
-     *
-     * Método: GET
-     * Ruta: /api/aplicaciones/{apliId}/rol/usuarios/{usuarioRed}
-     *
-     * Ejemplo:
-     * GET /api/aplicaciones/1/rol/usuarios/UUU111
-     */
-    @GetMapping("/rol/usuarios/{usuarioRed}")
-    public ResponseEntity<RespuestaGenerica<UsuarioRolResponseDTO>> obtenerRolUsuario(
-            @PathVariable Long apliId,
-            @PathVariable String usuarioRed) {
-
-        UsuarioRolResponseDTO resultado =
-                usuarioService.obtenerRolUsuario(
-                        usuarioRed,
-                        apliId
-                );
-
-        RespuestaGenerica<UsuarioRolResponseDTO> respuesta =
-                new RespuestaGenerica<>(
-                        TipoRespuesta.EXITOSO,
-                        resultado
-                );
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Asignar rol a un usuario para una aplicación específica
-     *
-     * Método: POST
-     * Ruta: /api/aplicaciones/{apliId}/usuarios/asignacion-rol
-     *
-     * Ejemplo:
-     * POST /api/aplicaciones/1/usuarios/asignacion-rol
-     */
-    @PostMapping("/usuarios/asignacion-rol")
-    public ResponseEntity<RespuestaGenerica<Void>> gestionarRolUsuario(
-            @PathVariable Long apliId,
-            @Valid @RequestBody GestionarRolUsuarioRequest request,
-            BindingResult bindingResult) {
-
-        if (bindingResult.hasErrors()) {
-            RespuestaGenerica<Void> respuesta =
-                    new RespuestaGenerica<>(
-                            TipoRespuesta.DATOS_INVALIDOS,
-                            null
-                    );
-        return ResponseEntity.ok(respuesta);
+                this.aplicacionesService = aplicacionesService;
         }
 
-        usuarioService.gestionarRolUsuario(
-                apliId,
-                request
-        );
+        /**
+         * Consultar aplicación
+         *
+         * Método: GET
+         * Ruta: /api/aplicaciones
+         *
+         * Ejemplo:
+         * GET /api/aplicaciones?codigo=GIU&estado=ACTIVO
+         */
+        @GetMapping
+        public ResponseEntity<RespuestaGenerica<List<AplicacionResponseDTO>>> obtenerAplicacion(
+                        @RequestParam(required = false) String codigo,
+                        @RequestParam(required = false) String estado) {
 
-        RespuestaGenerica<Void> respuesta =
-                new RespuestaGenerica<>(
-                        TipoRespuesta.EXITOSO,
-                        null
-                );
+                List<AplicacionResponseDTO> aplicaciones = aplicacionesService.obtenerAplicacion(
+                                codigo,
+                                estado);
 
-        return ResponseEntity.ok(respuesta);
-    }
+                RespuestaGenerica<List<AplicacionResponseDTO>> respuesta = new RespuestaGenerica<>(
+                                TipoRespuesta.EXITOSO,
+                                aplicaciones);
+
+                return ResponseEntity.ok(respuesta);
+        }
+
+        /**
+         * Crear aplicación
+         *
+         * Método: POST
+         * Ruta: /api/aplicaciones
+         * 
+         * Ejemplo de cuerpo de la solicitud:
+         * 
+         * {
+         * "nombre": "Prueba",
+         * "codigo": "PPP1115",
+         * "descripcion": null,
+         * "estado": "INACTIVO",
+         * "administracion": "PROPIA"
+         * }
+         */
+        @PostMapping
+        public ResponseEntity<RespuestaGenerica<AplicacionResponseDTO>> crearAplicacion(
+                        @RequestHeader("usuarioCreacion") String usuarioCreacion,
+                        @Valid @RequestBody CrearAplicacionRequest request) {
+
+                AplicacionResponseDTO aplicacion = aplicacionesService.crearAplicacion(
+                                request,
+                                usuarioCreacion);
+
+                RespuestaGenerica<AplicacionResponseDTO> respuesta = new RespuestaGenerica<>(
+                                TipoRespuesta.EXITOSO,
+                                aplicacion);
+
+                return ResponseEntity.ok(respuesta);
+        }
+
+        /**
+         * Modificar aplicación
+         *
+         * Método: PUT
+         * Ruta: /api/aplicaciones/{codigo}
+         * 
+         * Ejemplo de cuerpo de la solicitud:
+         * 
+         * {
+         * "nombre": "Prueba",
+         * "codigo": "PPP1115",
+         * "descripcion": null,
+         * "estado": "INACTIVO",
+         * "administracion": "PROPIA"
+         * }
+         */
+        @PutMapping("/{codigo}")
+        public ResponseEntity<RespuestaGenerica<Object>> modificarAplicacion(
+                        @PathVariable String codigo,
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
+                        @Valid @RequestBody ModificarAplicacionRequest request) {
+
+                AplicacionResponseDTO aplicacion = aplicacionesService.modificarAplicacion(
+                                request,
+                                usuarioModificacion);
+
+                RespuestaGenerica<Object> respuesta = new RespuestaGenerica<>(
+                                TipoRespuesta.EXITOSO,
+                                aplicacion);
+
+                return ResponseEntity.ok(respuesta);
+        }
+
+        /**
+         * Consultar administradores de una aplicación
+         *
+         * Método: GET
+         * Ruta: /api/aplicaciones/administradores
+         * 
+         * 
+         */
+        @GetMapping("/administradores")
+        public ResponseEntity<RespuestaGenerica<List<AdministradorAplicacionResponseDTO>>> obtenerAdministradorAplicacion(
+                        @RequestParam(required = false) String usuarioRed,
+                        @RequestParam(required = false) Long apliId) {
+
+                List<AdministradorAplicacionResponseDTO> administradores = aplicacionesService
+                                .obtenerAdministradorAplicacion(
+                                                usuarioRed,
+                                                apliId);
+
+                RespuestaGenerica<List<AdministradorAplicacionResponseDTO>> respuesta = new RespuestaGenerica<>(
+                                TipoRespuesta.EXITOSO,
+                                administradores);
+
+                return ResponseEntity.ok(respuesta);
+        }
+
+        /**
+         * Gestionar administrador de una aplicación
+         *
+         * Método: POST
+         * Ruta: /api/aplicaciones/administradores
+         */
+        @PostMapping("/administradores")
+        public ResponseEntity<RespuestaGenerica<AdministradorAplicacionResponseDTO>> gestionarAdministrador(
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
+                        @Valid @RequestBody GestionarAdministradorRequest request) {
+
+                AdministradorAplicacionResponseDTO administrador = aplicacionesService.crearAdministrador(
+                                request,
+                                usuarioModificacion);
+
+                RespuestaGenerica<AdministradorAplicacionResponseDTO> respuesta = new RespuestaGenerica<>(
+                                TipoRespuesta.EXITOSO,
+                                administrador);
+
+                return ResponseEntity.ok(respuesta);
+        }
 }
-

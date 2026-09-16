@@ -3,66 +3,62 @@ package com.giu.repository;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
-import com.giu.model.GestionarEstadoUsuarioRequest;
+import com.giu.model.GestionSeguridad.GestionarEstadoUsuarioRequest;
 import com.giu.utils.Constantes;
 import com.giu.utils.utilsBD;
 
 import oracle.jdbc.OracleTypes;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 @Repository
 public class GestionSeguridadRepository {
 
-    // Se define un logger para registrar eventos y errores en la aplicación
-    private static final Logger logger = LogManager.getLogger(Constantes.APLICACION);
+        private static final Logger logger = LogManager.getLogger(Constantes.APLICACION);
 
-    // Método para gestionar el estado de un usuario en la base de datos
-    public void gestionarEstadoUsuario(GestionarEstadoUsuarioRequest request) {
+        public void gestionarEstadoUsuario(
+                        GestionarEstadoUsuarioRequest request) {
 
-        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
+                try (Connection conn = utilsBD.obtenerConexion(
+                                Constantes.NOMBRE_BD_GIU)) {
 
-            String sql = "{ call PKG_GIU_GESTION_SEGURIDAD.PRC_GESTIONAR_ESTADO_USUARIO("
-                    + "?, ?, ?, ?, ?) }";
+                        String sql = "{ call PKG_GIU_GESTION_SEGURIDAD.PRC_GESTIONAR_ESTADO_USUARIO("
+                                        + "?, ?, ?, ?, ?) }";
 
-            try (CallableStatement stmt = conn.prepareCall(sql)) {
+                        try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                stmt.setLong(1, request.getApliId());
-                stmt.setString(2, request.getUsuarioRed());
-                stmt.setInt(3, request.getOperacion());
+                                stmt.setLong(1,request.getApliId());
 
-                stmt.registerOutParameter(
-                        4,
-                        OracleTypes.NUMBER);
+                                stmt.setString(2,request.getUsuarioRed());
 
-                stmt.registerOutParameter(
-                        5,
-                        OracleTypes.VARCHAR);
+                                stmt.setInt(3,request.getOperacion());
 
-                stmt.execute();
+                                stmt.registerOutParameter(4,OracleTypes.NUMBER);
 
-                int codigoSalida = stmt.getInt(4);
+                                stmt.registerOutParameter(5,OracleTypes.VARCHAR);
 
-                String mensajeSalida = stmt.getString(5);
+                                stmt.execute();
 
-                if (codigoSalida != 0) {
-                    throw new RuntimeException(
-                            mensajeSalida);
+                                int codigoSalida = stmt.getInt(4);
+
+                                String mensajeSalida = stmt.getString(5);
+
+                                utilsBD.validarResultado(
+                                                codigoSalida,
+                                                mensajeSalida);
+                        }
+
+                } catch (Exception e) {
+
+                        logger.error(
+                                        "Error gestionando estado del usuario: {}",
+                                        request.getUsuarioRed(),
+                                        request.getOperacion(),
+                                        e);
+
+                        throw new RuntimeException(e);
                 }
-            }
-
-        } catch (Exception e) {
-
-            logger.error(
-                    "Error gestionando estado del usuario: {}",
-                    request.getUsuarioRed(),
-                    e);
-
-            throw new RuntimeException(e);
         }
-    }
-
 }

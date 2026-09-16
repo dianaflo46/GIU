@@ -1,4 +1,4 @@
-package com.giu.model;
+package com.giu.model.GestionRecursos;
 
 
 import lombok.Data;

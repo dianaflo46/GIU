@@ -4,10 +4,14 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.giu.model.GestionarRolUsuarioRequest;
-import com.giu.model.UsuarioAplicacionDTO;
-import com.giu.model.UsuarioRequestDTO;
-import com.giu.model.UsuarioRolResponseDTO;
+import com.giu.model.GestionUsuarios.CrearUsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.GestionarRolesUsuariosRequestDTO;
+import com.giu.model.GestionUsuarios.ModificarUsuarioRequestDTO;
+import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
+import com.giu.model.GestionUsuarios.UsuarioResponseDTO;
+import com.giu.model.GestionUsuarios.UsuarioRolRequestDTO;
+import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
 import com.giu.repository.GestionUsuariosRepository;
 
 @Service
@@ -22,15 +26,14 @@ public class GestionUsuariosService {
         }
 
         // Método para obtener los usuarios según el usuario de red y el estado
-        public List<UsuarioRequestDTO> obtenerUsuarios(String usuarioRed, String estado) {
+        public List<UsuarioResponseDTO> obtenerUsuarios(String usuarioRed, String estado) {
 
                 return gestionUsuariosRepository.obtenerUsuarios(usuarioRed, estado);
         }
 
         // Método para obtener los usuarios asociados a una aplicación específica según
         // el estado
-        public List<UsuarioAplicacionDTO> obtenerUsuariosPorAplicacion(Long apliId, String estado) {
-
+        public List<UsuarioAplicacionResponseDTO> obtenerUsuariosPorAplicacion(Long apliId, String estado) {
                 return gestionUsuariosRepository.obtenerUsuarioXAplicacion(apliId, estado);
         }
 
@@ -41,32 +44,55 @@ public class GestionUsuariosService {
         }
 
         // Método para crear un nuevo usuario en el sistema
-        public void crearUsuario(UsuarioRequestDTO request) {
+        public UsuarioResponseDTO crearUsuario(CrearUsuarioRequestDTO request, String usuarioCreacion) {
 
-                gestionUsuariosRepository.crearUsuario(
+                return gestionUsuariosRepository.crearUsuario(
                                 request.getUsuarioRed(),
                                 request.getNombre(),
                                 request.getCorreo(),
                                 request.getNumeroIdentificacion(),
-                                request.getUsuarioCreacion());
+                                request.getSuperAdministrador(),
+                                usuarioCreacion);
         }
 
         // Método para modificar la información de un usuario existente en el sistema
-        public void modificarUsuario(UsuarioRequestDTO request) {
+        public UsuarioResponseDTO modificarUsuario(ModificarUsuarioRequestDTO request, String usuarioModificacion) {
 
-                gestionUsuariosRepository.modificarUsuario(
+                return gestionUsuariosRepository.modificarUsuario(
                                 request.getUsuarioRed(),
                                 request.getNombre(),
                                 request.getCorreo(),
                                 request.getNumeroIdentificacion(),
-                                request.getUsuarioModificacion());
+                                request.getSuperAdministrador(),
+                                usuarioModificacion);
         }
 
-        // Método para gestionar el rol de un usuario en una aplicación específica
-        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequest request) {
-
-                gestionUsuariosRepository.gestionarRolUsuario(apliId, request);
+        // Método asignar rol a usuario
+        public UsuarioAplicacionResponseDTO asignarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 0);
         }
 
+        // Método actualizar vigencia de un rol a usuario
+        public UsuarioAplicacionResponseDTO actualizarVigenciaRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 2);
+        }
+
+        // Método retirar rol a un usuario
+        public UsuarioAplicacionResponseDTO retirarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 1);
+        }
+
+        public void retirarRolesUsuarios(Long apliId, GestionarRolesUsuariosRequestDTO request, String usuarioModificacion) {
+
+                for (UsuarioRolRequestDTO usuario : request.getUsuariosRed()) {
+
+                        GestionarRolUsuarioRequestDTO rolRequest = new GestionarRolUsuarioRequestDTO();
+
+                        rolRequest.setUsuarioRed(usuario.getUsuarioRed());
+                        rolRequest.setRolId(usuario.getRolId());
+
+                        gestionUsuariosRepository.gestionarRolUsuario(apliId, rolRequest,usuarioModificacion, 1);
+                }
+        }
 
 }
