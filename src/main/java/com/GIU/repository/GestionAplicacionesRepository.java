@@ -328,9 +328,9 @@ public class GestionAplicacionesRepository {
             String usuarioModificacion,
             Integer operacion) {
 
-        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
+        String sql = "{ call PKG_GIU_GESTION_APLICACIONES.PRC_GESTIONAR_ADMINISTRADOR(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
-            String sql = "{ call PKG_GIU_GESTION_APLICACIONES.PRC_GESTIONAR_ADMINISTRADOR(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
 
             try (CallableStatement stmt = conn.prepareCall(sql)) {
 

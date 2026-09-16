@@ -29,25 +29,15 @@ public class GestionSeguridadRepository {
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-                                stmt.setLong(
-                                                1,
-                                                request.getApliId());
+                                stmt.setLong(1,request.getApliId());
 
-                                stmt.setString(
-                                                2,
-                                                request.getUsuarioRed());
+                                stmt.setString(2,request.getUsuarioRed());
 
-                                stmt.setInt(
-                                                3,
-                                                request.getOperacion());
+                                stmt.setInt(3,request.getOperacion());
 
-                                stmt.registerOutParameter(
-                                                4,
-                                                OracleTypes.NUMBER);
+                                stmt.registerOutParameter(4,OracleTypes.NUMBER);
 
-                                stmt.registerOutParameter(
-                                                5,
-                                                OracleTypes.VARCHAR);
+                                stmt.registerOutParameter(5,OracleTypes.VARCHAR);
 
                                 stmt.execute();
 

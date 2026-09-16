@@ -108,15 +108,9 @@ public class UsuarioAplicacionController {
         public ResponseEntity<RespuestaGenerica<Void>> asignarRolUsuario(
                         @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
+                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request) {
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
+                
 
                 usuarioService.asignarRolUsuario(
                                 apliId,
@@ -144,15 +138,9 @@ public class UsuarioAplicacionController {
                         @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
                         @PathVariable String usuarioRed,
-                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
+                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request) {
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
+                
 
                 request.setUsuarioRed(usuarioRed);
 
@@ -181,15 +169,8 @@ public class UsuarioAplicacionController {
         public ResponseEntity<RespuestaGenerica<Void>> retirarRolesUsuarios(
                         @RequestHeader("usuarioModificacion") String usuarioModificacion,
                         @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolesUsuariosRequestDTO request,
-                        BindingResult bindingResult) {
+                        @Valid @RequestBody GestionarRolesUsuariosRequestDTO request) {
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
 
                 usuarioService.retirarRolesUsuarios(apliId, request, usuarioModificacion);
 

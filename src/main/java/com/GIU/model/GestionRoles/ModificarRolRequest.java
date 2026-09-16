@@ -1,7 +1,6 @@
 package com.giu.model.GestionRoles;
 
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -23,7 +22,4 @@ public class ModificarRolRequest {
     private String descripcion;
 
     private String estado;
-
-    @NotBlank(message = "El usuario de modificación es obligatorio")
-    private String usuarioModificacion;
 }

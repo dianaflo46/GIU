@@ -1,12 +1,10 @@
 package com.giu.controller;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -33,13 +31,12 @@ public class UsuarioController {
         private final GestionSeguridadService gestionSeguridadService;
 
         public UsuarioController(GestionUsuariosService usuarioService,
-                                GestionSeguridadService gestionSeguridadService) {
+                        GestionSeguridadService gestionSeguridadService) {
                 this.usuarioService = usuarioService;
                 this.gestionSeguridadService = gestionSeguridadService;
         }
 
-                                                        /*GESTION DE USUARIOS */
-
+        /* GESTION DE USUARIOS */
 
         /**
          * Consultar usuarios
@@ -81,22 +78,15 @@ public class UsuarioController {
          * }
          */
         @PostMapping
-        public ResponseEntity<RespuestaGenerica<Void>> crearUsuario(
+        public ResponseEntity<RespuestaGenerica<UsuarioResponseDTO>> crearUsuario(
                         @RequestHeader("usuarioCreacion") String usuarioCreacion,
-                        @Valid @RequestBody CrearUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
+                        @Valid @RequestBody CrearUsuarioRequestDTO request) {
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
-                usuarioService.crearUsuario(request, usuarioCreacion);
+                UsuarioResponseDTO usuario = usuarioService.crearUsuario(request, usuarioCreacion);
 
-                RespuestaGenerica<Void> RespuestaGenerica = new RespuestaGenerica<>(TipoRespuesta.EXITOSO, null);
+                RespuestaGenerica<UsuarioResponseDTO> respuesta = new RespuestaGenerica<>(TipoRespuesta.EXITOSO, usuario);
 
-                return ResponseEntity.ok(RespuestaGenerica);
+                return ResponseEntity.ok(respuesta);
         }
 
         /**
@@ -115,27 +105,18 @@ public class UsuarioController {
          * }
          */
         @PutMapping
-        public ResponseEntity<RespuestaGenerica<Void>> modificarUsuario(
+        public ResponseEntity<RespuestaGenerica<UsuarioResponseDTO>> modificarUsuario(
                         @RequestHeader("usuarioModificacion") String usuarioModificacion,
-                        @Valid @RequestBody ModificarUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
+                        @Valid @RequestBody ModificarUsuarioRequestDTO request) {
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
+                UsuarioResponseDTO usuario = usuarioService.modificarUsuario(request, usuarioModificacion);
 
-                usuarioService.modificarUsuario(request, usuarioModificacion);
+                RespuestaGenerica<UsuarioResponseDTO> respuesta = new RespuestaGenerica<>(TipoRespuesta.EXITOSO, usuario);
 
-                RespuestaGenerica<Void> RespuestaGenerica = new RespuestaGenerica<>(TipoRespuesta.EXITOSO, null);
-
-                return ResponseEntity.ok(RespuestaGenerica);
+                return ResponseEntity.ok(respuesta);
         }
 
-
-                                                        /* GESTION DE SEGURIDAD */                                      
+        /* GESTION DE SEGURIDAD */
 
         /***
          * Gestionar estado de usuario
@@ -155,23 +136,8 @@ public class UsuarioController {
 
         @PutMapping("/gestionar-estado")
         public ResponseEntity<RespuestaGenerica<List<String>>> gestionarEstadoUsuario(
-                        @RequestHeader ("usuarioModificacion") String usuarioModificacion,
-                        @Valid @RequestBody GestionarEstadoUsuarioRequest request,
-                        BindingResult bindingResult) {
-
-                if (bindingResult.hasErrors()) {
-
-                        List<String> errores = bindingResult.getFieldErrors()
-                                        .stream()
-                                        .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                                        .collect(Collectors.toList());
-
-                        RespuestaGenerica<List<String>> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        errores);
-
-                        return ResponseEntity.ok(respuesta);
-                }
+                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
+                        @Valid @RequestBody GestionarEstadoUsuarioRequest request) {
 
                 gestionSeguridadService.gestionarEstadoUsuario(request, usuarioModificacion);
 
@@ -181,10 +147,5 @@ public class UsuarioController {
 
                 return ResponseEntity.ok(respuesta);
         }
-
-
-
-
-
 
 }

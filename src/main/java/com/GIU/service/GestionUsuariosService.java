@@ -44,9 +44,9 @@ public class GestionUsuariosService {
         }
 
         // Método para crear un nuevo usuario en el sistema
-        public void crearUsuario(CrearUsuarioRequestDTO request, String usuarioCreacion) {
+        public UsuarioResponseDTO crearUsuario(CrearUsuarioRequestDTO request, String usuarioCreacion) {
 
-                gestionUsuariosRepository.crearUsuario(
+                return gestionUsuariosRepository.crearUsuario(
                                 request.getUsuarioRed(),
                                 request.getNombre(),
                                 request.getCorreo(),
@@ -56,9 +56,9 @@ public class GestionUsuariosService {
         }
 
         // Método para modificar la información de un usuario existente en el sistema
-        public void modificarUsuario(ModificarUsuarioRequestDTO request, String usuarioModificacion) {
+        public UsuarioResponseDTO modificarUsuario(ModificarUsuarioRequestDTO request, String usuarioModificacion) {
 
-                gestionUsuariosRepository.modificarUsuario(
+                return gestionUsuariosRepository.modificarUsuario(
                                 request.getUsuarioRed(),
                                 request.getNombre(),
                                 request.getCorreo(),
@@ -68,18 +68,18 @@ public class GestionUsuariosService {
         }
 
         // Método asignar rol a usuario
-        public void asignarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
-                gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 0);
+        public UsuarioAplicacionResponseDTO asignarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 0);
         }
 
         // Método actualizar vigencia de un rol a usuario
-        public void actualizarVigenciaRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
-                gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 2);
+        public UsuarioAplicacionResponseDTO actualizarVigenciaRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 2);
         }
 
         // Método retirar rol a un usuario
-        public void retirarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
-                gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 1);
+        public UsuarioAplicacionResponseDTO retirarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request, String usuarioModificacion) {
+                return gestionUsuariosRepository.gestionarRolUsuario(apliId, request,usuarioModificacion, 1);
         }
 
         public void retirarRolesUsuarios(Long apliId, GestionarRolesUsuariosRequestDTO request, String usuarioModificacion) {

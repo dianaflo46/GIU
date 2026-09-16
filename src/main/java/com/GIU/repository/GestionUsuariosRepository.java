@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Repository;
 
+import com.giu.model.GestionAplicaciones.AplicacionResponseDTO;
 import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
 import com.giu.model.GestionUsuarios.UsuarioAplicacionResponseDTO;
 import com.giu.model.GestionUsuarios.UsuarioResponseDTO;
@@ -187,7 +188,7 @@ public class GestionUsuariosRepository {
         }
 
         // Crear usuario -> PRC_CREAR_USUARIO
-        public void crearUsuario(
+        public UsuarioResponseDTO crearUsuario(
                         String usuarioRed,
                         String nombre,
                         String correo,
@@ -195,10 +196,10 @@ public class GestionUsuariosRepository {
                         Integer superAdministrador,
                         String usuarioCreacion) {
 
+                String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_CREAR_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
-
-                        String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_CREAR_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
@@ -206,7 +207,9 @@ public class GestionUsuariosRepository {
                                 stmt.setString(2, nombre);
                                 stmt.setString(3, correo);
                                 stmt.setString(4, numeroIdentificacion);
-                                stmt.setInt(5, superAdministrador);
+
+                                stmt.setInt(5, superAdministrador != null ? superAdministrador : 0);
+
                                 stmt.setString(6, usuarioCreacion);
 
                                 stmt.registerOutParameter(7, OracleTypes.CURSOR);
@@ -217,7 +220,38 @@ public class GestionUsuariosRepository {
 
                                 int codigoSalida = stmt.getInt(8);
                                 String mensajeSalida = stmt.getString(9);
+
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
+
+                                try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
+
+                                        if (rs.next()) {
+
+                                                UsuarioResponseDTO usuario = new UsuarioResponseDTO();
+
+                                                usuario.setId(rs.getLong("ID"));
+                                                usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
+                                                usuario.setNombre(rs.getString("NOMBRE"));
+                                                usuario.setCorreo(rs.getString("CORREO"));
+                                                usuario.setEstado(rs.getString("ESTADO"));
+                                                usuario.setNumeroIdentificacion(rs.getString("NUMERO_IDENTIFICACION"));
+                                                usuario.setSuperAdministrador(rs.getInt("SUPER_ADMINISTRADOR"));
+
+                                                usuario.setFechaCreacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_CREACION")));
+
+                                                usuario.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
+
+                                                usuario.setFechaModificacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_MODIFICACION")));
+
+                                                usuario.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+
+                                                return usuario;
+                                        }
+                                }
+
+                                return null;
 
                         }
 
@@ -230,7 +264,7 @@ public class GestionUsuariosRepository {
         }
 
         // Modificar usuario -> PRC_MODIFICAR_USUARIO
-        public void modificarUsuario(
+        public UsuarioResponseDTO modificarUsuario(
                         String usuarioRed,
                         String nombre,
                         String correo,
@@ -238,10 +272,10 @@ public class GestionUsuariosRepository {
                         Integer superAdministrador,
                         String usuarioModificacion) {
 
+                String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_MODIFICAR_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
-
-                        String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_MODIFICAR_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
@@ -267,6 +301,36 @@ public class GestionUsuariosRepository {
                                 String mensajeSalida = stmt.getString(9);
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
+                                try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
+
+                                        if (rs.next()) {
+
+                                                UsuarioResponseDTO usuario = new UsuarioResponseDTO();
+
+                                                usuario.setId(rs.getLong("ID"));
+                                                usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
+                                                usuario.setNombre(rs.getString("NOMBRE"));
+                                                usuario.setCorreo(rs.getString("CORREO"));
+                                                usuario.setEstado(rs.getString("ESTADO"));
+                                                usuario.setNumeroIdentificacion(rs.getString("NUMERO_IDENTIFICACION"));
+                                                usuario.setSuperAdministrador(rs.getInt("SUPER_ADMINISTRADOR"));
+
+                                                usuario.setFechaCreacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_CREACION")));
+
+                                                usuario.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
+
+                                                usuario.setFechaModificacion(FechaUtils.convertirFecha(
+                                                                rs.getTimestamp("FECHA_MODIFICACION")));
+
+                                                usuario.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+
+                                                return usuario;
+                                        }
+                                }
+
+                                return null;
+
                         }
 
                 } catch (Exception e) {
@@ -278,12 +342,14 @@ public class GestionUsuariosRepository {
         }
 
         // Gestionar rol de un usuario en una aplicación -> PRC_GESTIONAR_ROL_USUARIO
-        public void gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request,String usuarioModificacion, Integer operacion) {
+        public UsuarioAplicacionResponseDTO gestionarRolUsuario(Long apliId, GestionarRolUsuarioRequestDTO request,
+                        String usuarioModificacion,
+                        Integer operacion) {
+
+                String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_GESTIONAR_ROL_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
                 try (Connection conn = utilsBD.obtenerConexion(
                                 Constantes.NOMBRE_BD_GIU)) {
-
-                        String sql = "{ call PKG_GIU_GESTION_USUARIOS.PRC_GESTIONAR_ROL_USUARIO(?, ?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
                         try (CallableStatement stmt = conn.prepareCall(sql)) {
 
@@ -316,6 +382,52 @@ public class GestionUsuariosRepository {
                                 String mensajeSalida = stmt.getString(10);
                                 utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
+                                try (ResultSet rs = (ResultSet) stmt.getObject(8)) {
+
+                                        if (rs.next()) {
+
+                                                UsuarioAplicacionResponseDTO usuario = new UsuarioAplicacionResponseDTO();
+
+                                                usuario.setId(rs.getLong("ID"));
+                                                usuario.setUsuarioRed(rs.getString("USUARIO_RED"));
+                                                usuario.setNombre(rs.getString("NOMBRE"));
+                                                usuario.setCorreo(rs.getString("CORREO"));
+                                                usuario.setNumeroIdentificacion(rs.getString("NUMERO_IDENTIFICACION"));
+                                                usuario.setEstadoUsua(rs.getString("ESTADO_USUA"));
+                                                usuario.setEsSuperAdmin(rs.getInt("ES_SUPER_ADMIN"));
+
+                                                usuario.setFechaCreacion(
+                                                                FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_CREACION")));
+
+                                                usuario.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
+
+                                                usuario.setFechaModificacion(
+                                                                FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_MODIFICACION")));
+
+                                                usuario.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+
+                                                usuario.setCodigoApli(rs.getString("CODIGO_APLI"));
+                                                usuario.setNombreApli(rs.getString("NOMBRE_APLI"));
+                                                usuario.setEstadoApli(rs.getString("ESTADO_APLI"));
+
+                                                usuario.setIdRol(rs.getObject("ID_ROL", Long.class));
+                                                usuario.setNombreRol(rs.getString("NOMBRE_ROL"));
+
+                                                usuario.setFechaInRol(
+                                                                FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_IN_ROL")));
+
+                                                usuario.setFechaFinRol(
+                                                                FechaUtils.convertirFecha(
+                                                                                rs.getTimestamp("FECHA_FIN_ROL")));
+
+                                                return usuario;
+                                        }
+                                }
+
+                                return null;
                         }
 
                 } catch (Exception e) {

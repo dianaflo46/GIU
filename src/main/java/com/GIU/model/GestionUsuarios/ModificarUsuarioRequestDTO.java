@@ -1,5 +1,7 @@
 package com.giu.model.GestionUsuarios;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -20,6 +22,8 @@ public class ModificarUsuarioRequestDTO {
 
     @Size(max = 50, message = "El número de identificación no puede superar los 50 caracteres")
     private String numeroIdentificacion;
-
-    private Integer superAdministrador;
+    
+    @Min(value = 0, message = "El campo superAdministrador debe ser 0 o 1")
+    @Max(value = 1, message = "El campo superAdministrador debe ser 0 o 1")
+    private Integer superAdministrador = 0;
 }
