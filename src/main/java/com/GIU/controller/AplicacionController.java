@@ -1,6 +1,7 @@
 package com.giu.controller;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
@@ -69,6 +70,16 @@ public class AplicacionController {
      *
      * Método: POST
      * Ruta: /api/aplicaciones
+     * 
+     * Ejemplo de cuerpo de la solicitud:
+     * 
+     * {
+     * "nombre": "Prueba",
+     * "codigo": "PPP1115",
+     * "descripcion": null,
+     * "estado": "INACTIVO",
+     * "administracion": "PROPIA"
+     * }
      */
     @PostMapping
     public ResponseEntity<RespuestaGenerica<AplicacionResponseDTO>> crearAplicacion(
@@ -104,9 +115,19 @@ public class AplicacionController {
      *
      * Método: PUT
      * Ruta: /api/aplicaciones/{codigo}
+     * 
+     * Ejemplo de cuerpo de la solicitud:
+     * 
+     * {
+     * "nombre": "Prueba",
+     * "codigo": "PPP1115",
+     * "descripcion": null,
+     * "estado": "INACTIVO",
+     * "administracion": "PROPIA"
+     * }
      */
     @PutMapping("/{codigo}")
-    public ResponseEntity<RespuestaGenerica<AplicacionResponseDTO>> modificarAplicacion(
+    public ResponseEntity<RespuestaGenerica<Object>> modificarAplicacion(
             @PathVariable String codigo,
             @RequestHeader("usuarioModificacion") String usuarioModificacion,
             @Valid @RequestBody ModificarAplicacionRequest request,
@@ -114,10 +135,14 @@ public class AplicacionController {
 
         if (bindingResult.hasErrors()) {
 
-            RespuestaGenerica<AplicacionResponseDTO> respuesta =
-                    new RespuestaGenerica<>(
+                List<String> errores = bindingResult.getFieldErrors()
+                .stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.toList());
+
+            RespuestaGenerica<Object> respuesta = new RespuestaGenerica<>(
                             TipoRespuesta.DATOS_INVALIDOS,
-                            null);
+                            errores);
 
             return ResponseEntity.ok(respuesta);
         }
@@ -127,8 +152,7 @@ public class AplicacionController {
                         request,
                         usuarioModificacion);
 
-        RespuestaGenerica<AplicacionResponseDTO> respuesta =
-                new RespuestaGenerica<>(
+        RespuestaGenerica<Object> respuesta = new RespuestaGenerica<>(
                         TipoRespuesta.EXITOSO,
                         aplicacion);
 
@@ -140,6 +164,8 @@ public class AplicacionController {
      *
      * Método: GET
      * Ruta: /api/aplicaciones/administradores
+     * 
+     * 
      */
     @GetMapping("/administradores")
     public ResponseEntity<
@@ -188,7 +214,7 @@ public class AplicacionController {
         }
 
         AdministradorAplicacionResponseDTO administrador =
-                aplicacionesService.gestionarAdministrador(
+                aplicacionesService.crearAdministrador(
                         request,
                         usuarioModificacion);
 

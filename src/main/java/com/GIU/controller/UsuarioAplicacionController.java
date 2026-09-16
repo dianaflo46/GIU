@@ -96,6 +96,13 @@ public class UsuarioAplicacionController {
          *
          * Ejemplo:
          * POST /api/aplicaciones/1/usuarios/asignacion-rol
+         * 
+         * Ejemplo de cuerpo de la solicitud:
+         * 
+         * {
+         * "usuarioRed": "UUU633",
+         * "rolId": 2
+         * }
          */
         @PostMapping("/usuarios/asignacion-rol")
         public ResponseEntity<RespuestaGenerica<Void>> asignarRolUsuario(

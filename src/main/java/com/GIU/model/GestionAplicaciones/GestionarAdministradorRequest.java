@@ -15,10 +15,6 @@ public class GestionarAdministradorRequest {
 
     @NotNull(message = "El apliId es obligatorio")
     private Long apliId;
-
-    @NotNull(message = "La operación es obligatoria")
-    private Integer operacion;
-
     private LocalDateTime fechaIn;
     private LocalDateTime fechaFin;
 

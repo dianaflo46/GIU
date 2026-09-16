@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 
 import com.giu.model.GestionAplicaciones.AdministradorAplicacionResponseDTO;
 import com.giu.model.GestionAplicaciones.AplicacionResponseDTO;
+import com.giu.model.GestionAplicaciones.GestionarAdministradorRequest;
 import com.giu.utils.Constantes;
 import com.giu.utils.FechaUtils;
 import com.giu.utils.utilsBD;
@@ -323,96 +324,97 @@ public class GestionAplicacionesRepository {
     // Gestionar un administrador de una aplicación -> PRC_GESTIONAR_ADMINISTRADOR
 
     public AdministradorAplicacionResponseDTO gestionarAdministrador(
-            String usuarioRed,
-            Long apliId,
-            Integer operacion,
-            Timestamp fechaIn,
-            Timestamp fechaFin,
-            String usuarioModificacion) {
+            GestionarAdministradorRequest request,
+            String usuarioModificacion,
+            Integer operacion) {
 
-        String sql = "{ call PKG_GIU_GESTION_APLICACIONES.PRC_GESTIONAR_ADMINISTRADOR(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
+        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU)) {
 
-        try (Connection conn = utilsBD.obtenerConexion(Constantes.NOMBRE_BD_GIU);
-                CallableStatement stmt = conn.prepareCall(sql)) {
+            String sql = "{ call PKG_GIU_GESTION_APLICACIONES.PRC_GESTIONAR_ADMINISTRADOR(?, ?, ?, ?, ?, ?, ?, ?, ?) }";
 
-            stmt.setString(1, usuarioRed);
+            try (CallableStatement stmt = conn.prepareCall(sql)) {
 
-            if (apliId != null) {
-                stmt.setLong(2, apliId);
-            } else {
-                stmt.setNull(2, Types.NUMERIC);
-            }
-
-            if (operacion != null) {
+                stmt.setString(1, request.getUsuarioRed());
+                stmt.setLong(2, request.getApliId());
                 stmt.setInt(3, operacion);
-            } else {
-                stmt.setNull(3, Types.NUMERIC);
+
+                if (request.getFechaIn() != null) {
+                    stmt.setTimestamp(4, Timestamp.valueOf(request.getFechaIn()));
+                } else {
+                    stmt.setNull(4, Types.TIMESTAMP);
+                }
+
+                if (request.getFechaFin() != null) {
+                    stmt.setTimestamp(5, Timestamp.valueOf(request.getFechaFin()));
+                } else {
+                    stmt.setNull(5, Types.TIMESTAMP);
+                }
+
+                stmt.setString(6, usuarioModificacion);
+
+                stmt.registerOutParameter(7, OracleTypes.CURSOR);
+                stmt.registerOutParameter(8, OracleTypes.NUMBER);
+                stmt.registerOutParameter(9, OracleTypes.VARCHAR);
+
+                stmt.execute();
+
+                int codigoSalida = stmt.getInt(8);
+                String mensajeSalida = stmt.getString(9);
+
+                utilsBD.validarResultado(codigoSalida, mensajeSalida);
+
+                // Obtener resultado
+                try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
+
+                    if (rs != null && rs.next()) {
+
+                        AdministradorAplicacionResponseDTO administrador = new AdministradorAplicacionResponseDTO();
+
+                        administrador.setId(rs.getLong(1));
+                        administrador.setApliId(rs.getLong(2));
+                        administrador.setFechaIn(
+                                FechaUtils.convertirFecha(rs.getTimestamp(3)));
+                        administrador.setFechaFin(
+                                FechaUtils.convertirFecha(rs.getTimestamp(4)));
+                        administrador.setFechaCreacion(
+                                FechaUtils.convertirFecha(rs.getTimestamp(5)));
+                        administrador.setUsuarioCreacion(rs.getString(6));
+                        administrador.setFechaModificacion(
+                                FechaUtils.convertirFecha(rs.getTimestamp(7)));
+                        administrador.setUsuarioModificacion(rs.getString(8));
+
+                        administrador.setUsuarioId(rs.getLong(9));
+                        administrador.setUsuarioRed(rs.getString(10));
+                        administrador.setNombre(rs.getString(11));
+                        administrador.setCorreo(rs.getString(12));
+                        administrador.setNumeroIdentificacion(rs.getString(13));
+                        administrador.setEstadoUsuario(rs.getString(14));
+                        administrador.setEsSuperAdmin(rs.getInt(15));
+                        administrador.setFechaCreacionUsuario(
+                                FechaUtils.convertirFecha(rs.getTimestamp(16)));
+                        administrador.setUsuarioCreacionUsuario(rs.getString(17));
+                        administrador.setFechaModificacionUsuario(
+                                FechaUtils.convertirFecha(rs.getTimestamp(18)));
+                        administrador.setUsuarioModificacionUsuario(rs.getString(19));
+
+                        return administrador;
+                    }
+                }
+
+                return null;
             }
-
-            if (fechaIn != null) {
-                stmt.setTimestamp(4, fechaIn);
-            } else {
-                stmt.setNull(4, Types.TIMESTAMP);
-            }
-
-            if (fechaFin != null) {
-                stmt.setTimestamp(5, fechaFin);
-            } else {
-                stmt.setNull(5, Types.TIMESTAMP);
-            }
-
-            stmt.setString(6, usuarioModificacion);
-
-            stmt.registerOutParameter(7, OracleTypes.CURSOR);
-            stmt.registerOutParameter(8, OracleTypes.NUMBER);
-            stmt.registerOutParameter(9, OracleTypes.VARCHAR);
-
-            stmt.execute();
-
-            int codigoSalida = stmt.getInt(8);
-            String mensajeSalida = stmt.getString(9);
-            utilsBD.validarResultado(codigoSalida, mensajeSalida);
-
-
-            try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
-
-            if (rs != null && rs.next()) {
-
-                AdministradorAplicacionResponseDTO administrador =
-                        new AdministradorAplicacionResponseDTO();
-
-                administrador.setId(rs.getLong(1));
-                administrador.setApliId(rs.getLong(2));
-                administrador.setFechaIn(FechaUtils.convertirFecha(rs.getTimestamp(3)));
-                administrador.setFechaFin(FechaUtils.convertirFecha(rs.getTimestamp(4)));
-                administrador.setFechaCreacion(FechaUtils.convertirFecha(rs.getTimestamp(5)));
-                administrador.setUsuarioCreacion(rs.getString(6));
-                administrador.setFechaModificacion(FechaUtils.convertirFecha(rs.getTimestamp(7)));
-                administrador.setUsuarioModificacion(rs.getString(8));
-
-                administrador.setUsuarioId(rs.getLong(9));
-                administrador.setUsuarioRed(rs.getString(10));
-                administrador.setNombre(rs.getString(11));
-                administrador.setCorreo(rs.getString(12));
-                administrador.setNumeroIdentificacion(rs.getString(13));
-                administrador.setEstadoUsuario(rs.getString(14));
-                administrador.setEsSuperAdmin(rs.getInt(15));
-                administrador.setFechaCreacionUsuario(FechaUtils.convertirFecha(rs.getTimestamp(16)));
-                administrador.setUsuarioCreacionUsuario(rs.getString(17));
-                administrador.setFechaModificacionUsuario(FechaUtils.convertirFecha(rs.getTimestamp(18)));
-                administrador.setUsuarioModificacionUsuario(rs.getString(19));
-
-                return administrador;
-            }
-        }
-
-        return null;
 
         } catch (Exception e) {
 
-            logger.error("Error al gestionar administrador de aplicación", e);
+            logger.error(
+                    "Error al gestionar administrador de aplicación para usuario {} en aplicación {}",
+                    request.getUsuarioRed(),
+                    request.getApliId(),
+                    e);
 
-            throw new RuntimeException("Error gestionando administrador de aplicación", e);
+            throw new RuntimeException(
+                    "Error gestionando administrador de aplicación", e);
         }
     }
+
 }

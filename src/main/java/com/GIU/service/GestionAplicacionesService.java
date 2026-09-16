@@ -57,22 +57,11 @@ public class GestionAplicacionesService {
     }
 
     // Método para gestionar administradores de aplicaciones
-    public AdministradorAplicacionResponseDTO gestionarAdministrador(GestionarAdministradorRequest request, String usuarioModificacion) {
-
-        Timestamp fechaIn = request.getFechaIn() != null
-                ? Timestamp.valueOf(request.getFechaIn())
-                : null;
-
-        Timestamp fechaFin = request.getFechaFin() != null
-                ? Timestamp.valueOf(request.getFechaFin())
-                : null;
+    public AdministradorAplicacionResponseDTO crearAdministrador(GestionarAdministradorRequest request, String usuarioModificacion) {
 
         return gestionAplicacionesRepository.gestionarAdministrador(
-                request.getUsuarioRed(),
-                request.getApliId(),
-                request.getOperacion(),
-                fechaIn,
-                fechaFin,
-                usuarioModificacion);
+                request,
+                usuarioModificacion,
+                0);
     }
 }
