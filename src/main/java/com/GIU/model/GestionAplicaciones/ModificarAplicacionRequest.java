@@ -15,5 +15,4 @@ public class ModificarAplicacionRequest {
     private String descripcion;
     private String estado;
     private String administracion;
-    private String usuarioModificacion;
 }

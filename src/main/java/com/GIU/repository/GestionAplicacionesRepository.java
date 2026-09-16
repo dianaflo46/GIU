@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import com.giu.model.GestionAplicaciones.AdministradorAplicacionResponseDTO;
 import com.giu.model.GestionAplicaciones.AplicacionResponseDTO;
 import com.giu.utils.Constantes;
+import com.giu.utils.FechaUtils;
 import com.giu.utils.utilsBD;
 
 @Repository
@@ -83,7 +84,8 @@ public class GestionAplicacionesRepository {
         return aplicaciones;
     }
 
-    // Consulta los administradores asociados a una aplicación -> FN_OBTENER_ADMINISTRADOR_APLICACION
+    // Consulta los administradores asociados a una aplicación ->
+    // FN_OBTENER_ADMINISTRADOR_APLICACION
     public List<AdministradorAplicacionResponseDTO> obtenerAdministradorAplicacion(
             String usuarioRed,
             Long apliId) {
@@ -198,7 +200,7 @@ public class GestionAplicacionesRepository {
     }
 
     // Crea una aplicación -> PRC_CREAR_APLICACION
-    public void crearAplicacion(
+    public AplicacionResponseDTO crearAplicacion(
             String codigo,
             String nombre,
             String descripcion,
@@ -227,6 +229,28 @@ public class GestionAplicacionesRepository {
 
             utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
+            try (ResultSet rs = (ResultSet) stmt.getObject(6)) {
+
+                if (rs != null && rs.next()) {
+
+                    AplicacionResponseDTO aplicacion = new AplicacionResponseDTO();
+
+                    aplicacion.setId(rs.getLong("ID"));
+                    aplicacion.setNombre(rs.getString("NOMBRE"));
+                    aplicacion.setCodigo(rs.getString("CODIGO"));
+                    aplicacion.setDescripcion(rs.getString("DESCRIPCION"));
+                    aplicacion.setEstado(rs.getString("ESTADO"));
+                    aplicacion.setAdministracion(rs.getString("ADMINISTRACION"));
+                    aplicacion.setFechaCreacion(FechaUtils.convertirFecha(rs.getTimestamp("FECHA_CREACION")));
+                    aplicacion.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
+                    aplicacion.setFechaModificacion(FechaUtils.convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
+                    aplicacion.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+                    return aplicacion;
+                }
+            }
+
+            return null;
+
         } catch (Exception e) {
 
             logger.error("Error al crear aplicación", e);
@@ -236,7 +260,7 @@ public class GestionAplicacionesRepository {
     }
 
     // Modifica una aplicación -> PRC_MODIFICAR_APLICACION
-    public void modificarAplicacion(
+    public AplicacionResponseDTO modificarAplicacion(
             String nombre,
             String codigo,
             String descripcion,
@@ -266,6 +290,28 @@ public class GestionAplicacionesRepository {
             String mensajeSalida = stmt.getString(9);
             utilsBD.validarResultado(codigoSalida, mensajeSalida);
 
+            try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
+
+                if (rs != null && rs.next()) {
+
+                    AplicacionResponseDTO aplicacion = new AplicacionResponseDTO();
+
+                    aplicacion.setId(rs.getLong("ID"));
+                    aplicacion.setNombre(rs.getString("NOMBRE"));
+                    aplicacion.setCodigo(rs.getString("CODIGO"));
+                    aplicacion.setDescripcion(rs.getString("DESCRIPCION"));
+                    aplicacion.setEstado(rs.getString("ESTADO"));
+                    aplicacion.setAdministracion(rs.getString("ADMINISTRACION"));
+                    aplicacion.setFechaCreacion(FechaUtils.convertirFecha(rs.getTimestamp("FECHA_CREACION")));
+                    aplicacion.setUsuarioCreacion(rs.getString("USUARIO_CREACION"));
+                    aplicacion.setFechaModificacion(FechaUtils.convertirFecha(rs.getTimestamp("FECHA_MODIFICACION")));
+                    aplicacion.setUsuarioModificacion(rs.getString("USUARIO_MODIFICACION"));
+
+                    return aplicacion;
+                }
+            }
+            return null;
+
         } catch (Exception e) {
 
             logger.error("Error al modificar aplicación", e);
@@ -276,7 +322,7 @@ public class GestionAplicacionesRepository {
 
     // Gestionar un administrador de una aplicación -> PRC_GESTIONAR_ADMINISTRADOR
 
-    public void gestionarAdministrador(
+    public AdministradorAplicacionResponseDTO gestionarAdministrador(
             String usuarioRed,
             Long apliId,
             Integer operacion,
@@ -326,6 +372,41 @@ public class GestionAplicacionesRepository {
             int codigoSalida = stmt.getInt(8);
             String mensajeSalida = stmt.getString(9);
             utilsBD.validarResultado(codigoSalida, mensajeSalida);
+
+
+            try (ResultSet rs = (ResultSet) stmt.getObject(7)) {
+
+            if (rs != null && rs.next()) {
+
+                AdministradorAplicacionResponseDTO administrador =
+                        new AdministradorAplicacionResponseDTO();
+
+                administrador.setId(rs.getLong(1));
+                administrador.setApliId(rs.getLong(2));
+                administrador.setFechaIn(FechaUtils.convertirFecha(rs.getTimestamp(3)));
+                administrador.setFechaFin(FechaUtils.convertirFecha(rs.getTimestamp(4)));
+                administrador.setFechaCreacion(FechaUtils.convertirFecha(rs.getTimestamp(5)));
+                administrador.setUsuarioCreacion(rs.getString(6));
+                administrador.setFechaModificacion(FechaUtils.convertirFecha(rs.getTimestamp(7)));
+                administrador.setUsuarioModificacion(rs.getString(8));
+
+                administrador.setUsuarioId(rs.getLong(9));
+                administrador.setUsuarioRed(rs.getString(10));
+                administrador.setNombre(rs.getString(11));
+                administrador.setCorreo(rs.getString(12));
+                administrador.setNumeroIdentificacion(rs.getString(13));
+                administrador.setEstadoUsuario(rs.getString(14));
+                administrador.setEsSuperAdmin(rs.getInt(15));
+                administrador.setFechaCreacionUsuario(FechaUtils.convertirFecha(rs.getTimestamp(16)));
+                administrador.setUsuarioCreacionUsuario(rs.getString(17));
+                administrador.setFechaModificacionUsuario(FechaUtils.convertirFecha(rs.getTimestamp(18)));
+                administrador.setUsuarioModificacionUsuario(rs.getString(19));
+
+                return administrador;
+            }
+        }
+
+        return null;
 
         } catch (Exception e) {
 

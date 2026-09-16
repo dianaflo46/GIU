@@ -19,9 +19,6 @@ public class CrearAplicacionRequest {
     @Size(max = 200, message = "La descripción no puede superar los 200 caracteres")
     private String descripcion;
 
-    @NotBlank(message = "La administración es obligatoria")
     private String administracion;
 
-    @NotBlank(message = "El usuario de creación es obligatorio")
-    private String usuarioCreacion;
 }

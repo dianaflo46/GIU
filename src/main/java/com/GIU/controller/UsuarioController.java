@@ -33,10 +33,13 @@ public class UsuarioController {
         private final GestionSeguridadService gestionSeguridadService;
 
         public UsuarioController(GestionUsuariosService usuarioService,
-                        GestionSeguridadService gestionSeguridadService) {
+                                GestionSeguridadService gestionSeguridadService) {
                 this.usuarioService = usuarioService;
                 this.gestionSeguridadService = gestionSeguridadService;
         }
+
+                                                        /*GESTION DE USUARIOS */
+
 
         /**
          * Consultar usuarios
@@ -131,6 +134,9 @@ public class UsuarioController {
                 return ResponseEntity.ok(RespuestaGenerica);
         }
 
+
+                                                        /* GESTION DE SEGURIDAD */                                      
+
         /***
          * Gestionar estado de usuario
          * 
@@ -146,6 +152,7 @@ public class UsuarioController {
          * "usuarioModificacion": "uuu111"
          * * }
          */
+
         @PutMapping("/gestionar-estado")
         public ResponseEntity<RespuestaGenerica<List<String>>> gestionarEstadoUsuario(
                         @RequestHeader ("usuarioModificacion") String usuarioModificacion,
@@ -174,4 +181,10 @@ public class UsuarioController {
 
                 return ResponseEntity.ok(respuesta);
         }
+
+
+
+
+
+
 }

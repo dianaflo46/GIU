@@ -6,188 +6,197 @@ import javax.validation.Valid;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.giu.model.GestionRoles.RolResponseDTO;
-import com.giu.model.GestionUsuarios.GestionarRolUsuarioRequestDTO;
-import com.giu.model.GestionUsuarios.GestionarRolesUsuariosRequestDTO;
-import com.giu.model.GestionUsuarios.UsuarioRolResponseDTO;
-import com.giu.service.GestionRolesService;
-import com.giu.service.GestionUsuariosService;
+import com.giu.model.GestionAplicaciones.AdministradorAplicacionResponseDTO;
+import com.giu.model.GestionAplicaciones.AplicacionResponseDTO;
+import com.giu.model.GestionAplicaciones.CrearAplicacionRequest;
+import com.giu.model.GestionAplicaciones.GestionarAdministradorRequest;
+import com.giu.model.GestionAplicaciones.ModificarAplicacionRequest;
+import com.giu.service.GestionAplicacionesService;
 import com.giu.utils.RespuestaGenerica;
 import com.giu.utils.TipoRespuesta;
 
 @RestController
-@RequestMapping("/api/aplicaciones/{apliId}")
+@RequestMapping("/api/aplicaciones")
 public class AplicacionController {
 
-        private final GestionUsuariosService usuarioService;
-        private final GestionRolesService rolesService;
+    private final GestionAplicacionesService aplicacionesService;
 
-        public AplicacionController(
-                        GestionUsuariosService usuarioService,
-                        GestionRolesService rolesService) {
+    public AplicacionController(
+            GestionAplicacionesService aplicacionesService) {
 
-                this.usuarioService = usuarioService;
-                this.rolesService = rolesService;
+        this.aplicacionesService = aplicacionesService;
+    }
+
+    /**
+     * Consultar aplicación
+     *
+     * Método: GET
+     * Ruta: /api/aplicaciones
+     *
+     * Ejemplo:
+     * GET /api/aplicaciones?codigo=GIU&estado=ACTIVO
+     */
+    @GetMapping
+    public ResponseEntity<RespuestaGenerica<List<AplicacionResponseDTO>>> obtenerAplicacion(
+            @RequestParam(required = false) String codigo,
+            @RequestParam(required = false) String estado) {
+
+        List<AplicacionResponseDTO> aplicaciones =
+                aplicacionesService.obtenerAplicacion(
+                        codigo,
+                        estado);
+
+        RespuestaGenerica<List<AplicacionResponseDTO>> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        aplicaciones);
+
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Crear aplicación
+     *
+     * Método: POST
+     * Ruta: /api/aplicaciones
+     */
+    @PostMapping
+    public ResponseEntity<RespuestaGenerica<AplicacionResponseDTO>> crearAplicacion(
+            @RequestHeader("usuarioCreacion") String usuarioCreacion,
+            @Valid @RequestBody CrearAplicacionRequest request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+
+            RespuestaGenerica<AplicacionResponseDTO> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null);
+
+            return ResponseEntity.ok(respuesta);
         }
 
-        /**
-         * Consultar roles de una aplicación
-         *
-         * Método: GET
-         * Ruta: /api/aplicaciones/{apliId}/roles
-         *
-         * Ejemplo:
-         * GET /api/aplicaciones/1/roles
-         */
-        @GetMapping("/roles")
-        public ResponseEntity<RespuestaGenerica<List<RolResponseDTO>>> obtenerRoles(
-                        @PathVariable Long apliId) {
+        AplicacionResponseDTO aplicacion =
+                aplicacionesService.crearAplicacion(
+                        request,
+                        usuarioCreacion);
 
-                List<RolResponseDTO> roles = rolesService.obtenerRoles(apliId);
+        RespuestaGenerica<AplicacionResponseDTO> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        aplicacion);
 
-                RespuestaGenerica<List<RolResponseDTO>> respuesta = new RespuestaGenerica<>(
-                                TipoRespuesta.EXITOSO,
-                                roles);
+        return ResponseEntity.ok(respuesta);
+    }
 
-                return ResponseEntity.ok(respuesta);
+    /**
+     * Modificar aplicación
+     *
+     * Método: PUT
+     * Ruta: /api/aplicaciones/{codigo}
+     */
+    @PutMapping("/{codigo}")
+    public ResponseEntity<RespuestaGenerica<AplicacionResponseDTO>> modificarAplicacion(
+            @PathVariable String codigo,
+            @RequestHeader("usuarioModificacion") String usuarioModificacion,
+            @Valid @RequestBody ModificarAplicacionRequest request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+
+            RespuestaGenerica<AplicacionResponseDTO> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null);
+
+            return ResponseEntity.ok(respuesta);
         }
 
-        /**
-         * Consultar asignación de rol de un usuario
-         *
-         * Método: GET
-         * Ruta: /api/aplicaciones/{apliId}/rol/usuarios/{usuarioRed}
-         *
-         * Ejemplo:
-         * GET /api/aplicaciones/1/rol/usuarios/UUU111
-         */
-        @GetMapping("/rol/usuarios/{usuarioRed}")
-        public ResponseEntity<RespuestaGenerica<UsuarioRolResponseDTO>> obtenerRolUsuario(
-                        @PathVariable Long apliId,
-                        @PathVariable String usuarioRed) {
+        AplicacionResponseDTO aplicacion =
+                aplicacionesService.modificarAplicacion(
+                        request,
+                        usuarioModificacion);
 
-                UsuarioRolResponseDTO resultado = usuarioService.obtenerRolUsuario(
-                                usuarioRed,
-                                apliId);
+        RespuestaGenerica<AplicacionResponseDTO> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        aplicacion);
 
-                RespuestaGenerica<UsuarioRolResponseDTO> respuesta = new RespuestaGenerica<>(
-                                TipoRespuesta.EXITOSO,
-                                resultado);
+        return ResponseEntity.ok(respuesta);
+    }
 
-                return ResponseEntity.ok(respuesta);
+    /**
+     * Consultar administradores de una aplicación
+     *
+     * Método: GET
+     * Ruta: /api/aplicaciones/administradores
+     */
+    @GetMapping("/administradores")
+    public ResponseEntity<
+            RespuestaGenerica<
+                    List<AdministradorAplicacionResponseDTO>>>
+    obtenerAdministradorAplicacion(
+            @RequestParam(required = false) String usuarioRed,
+            @RequestParam(required = false) Long apliId) {
+
+        List<AdministradorAplicacionResponseDTO> administradores =
+                aplicacionesService.obtenerAdministradorAplicacion(
+                        usuarioRed,
+                        apliId);
+
+        RespuestaGenerica<
+                List<AdministradorAplicacionResponseDTO>> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        administradores);
+
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Gestionar administrador de una aplicación
+     *
+     * Método: POST
+     * Ruta: /api/aplicaciones/administradores
+     */
+    @PostMapping("/administradores")
+    public ResponseEntity<
+            RespuestaGenerica<AdministradorAplicacionResponseDTO>>
+    gestionarAdministrador(
+            @RequestHeader("usuarioModificacion") String usuarioModificacion,
+            @Valid @RequestBody GestionarAdministradorRequest request,
+            BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+
+            RespuestaGenerica<AdministradorAplicacionResponseDTO> respuesta =
+                    new RespuestaGenerica<>(
+                            TipoRespuesta.DATOS_INVALIDOS,
+                            null);
+
+            return ResponseEntity.ok(respuesta);
         }
 
-        /**
-         * Asignar rol a un usuario para una aplicación específica
-         *
-         * Método: POST
-         * Ruta: /api/aplicaciones/{apliId}/usuarios/asignacion-rol
-         *
-         * Ejemplo:
-         * POST /api/aplicaciones/1/usuarios/asignacion-rol
-         */
-        @PostMapping("/usuarios/asignacion-rol")
-        public ResponseEntity<RespuestaGenerica<Void>> asignarRolUsuario(
-                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
-                        @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
+        AdministradorAplicacionResponseDTO administrador =
+                aplicacionesService.gestionarAdministrador(
+                        request,
+                        usuarioModificacion);
 
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
+        RespuestaGenerica<AdministradorAplicacionResponseDTO> respuesta =
+                new RespuestaGenerica<>(
+                        TipoRespuesta.EXITOSO,
+                        administrador);
 
-                usuarioService.asignarRolUsuario(
-                                apliId,
-                                request,
-                                usuarioModificacion);
-
-                RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                TipoRespuesta.EXITOSO,
-                                null);
-
-                return ResponseEntity.ok(respuesta);
-        }
-
-        /**
-         * Retirar rol a un usuario para una aplicación específica
-         *
-         * Método: DELETE
-         * Ruta: /api/aplicaciones/{apliId}/usuarios/{usuarioRed}
-         *
-         * Ejemplo:
-         * DELETE /api/aplicaciones/1/usuarios/uuu111
-         */
-        @DeleteMapping("/usuarios/{usuarioRed}")
-        public ResponseEntity<RespuestaGenerica<Void>> retirarRolUsuario(
-                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
-                        @PathVariable Long apliId,
-                        @PathVariable String usuarioRed,
-                        @Valid @RequestBody GestionarRolUsuarioRequestDTO request,
-                        BindingResult bindingResult) {
-
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
-
-                request.setUsuarioRed(usuarioRed);
-
-                usuarioService.retirarRolUsuario(
-                                apliId,
-                                request,
-                                usuarioModificacion);
-
-                RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                TipoRespuesta.EXITOSO,
-                                null);
-
-                return ResponseEntity.ok(respuesta);
-        }
-
-        /**
-         * Retirar rol a un usuario para una aplicación específica
-         *
-         * Método: DELETE
-         * Ruta: /api/aplicaciones/{apliId}/usuario
-         *
-         * Ejemplo:
-         * DELETE /api/aplicaciones/1/usuario
-         */
-        @DeleteMapping("/usuario")
-        public ResponseEntity<RespuestaGenerica<Void>> retirarRolesUsuarios(
-                        @RequestHeader("usuarioModificacion") String usuarioModificacion,
-                        @PathVariable Long apliId,
-                        @Valid @RequestBody GestionarRolesUsuariosRequestDTO request,
-                        BindingResult bindingResult) {
-
-                if (bindingResult.hasErrors()) {
-                        RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                        TipoRespuesta.DATOS_INVALIDOS,
-                                        null);
-                        return ResponseEntity.ok(respuesta);
-                }
-
-                usuarioService.retirarRolesUsuarios(apliId, request, usuarioModificacion);
-
-                RespuestaGenerica<Void> respuesta = new RespuestaGenerica<>(
-                                TipoRespuesta.EXITOSO,
-                                null);
-
-                return ResponseEntity.ok(respuesta);
-        }
+        return ResponseEntity.ok(respuesta);
+    }
 }

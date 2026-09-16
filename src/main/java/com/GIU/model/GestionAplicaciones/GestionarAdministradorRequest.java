@@ -20,9 +20,6 @@ public class GestionarAdministradorRequest {
     private Integer operacion;
 
     private LocalDateTime fechaIn;
-
     private LocalDateTime fechaFin;
 
-    @NotBlank(message = "El usuarioModificacion es obligatorio")
-    private String usuarioModificacion;
 }

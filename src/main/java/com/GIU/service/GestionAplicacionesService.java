@@ -34,30 +34,30 @@ public class GestionAplicacionesService {
     }
 
     // Método crear aplicación
-    public void crearAplicacion(CrearAplicacionRequest request) {
+    public AplicacionResponseDTO crearAplicacion(CrearAplicacionRequest request, String usuarioCreacion) {
 
-        gestionAplicacionesRepository.crearAplicacion(
+        return gestionAplicacionesRepository.crearAplicacion(
                 request.getCodigo(),
                 request.getNombre(),
                 request.getDescripcion(),
                 request.getAdministracion(),
-                request.getUsuarioCreacion());
+                usuarioCreacion);
     }
 
     // Método modificar aplicación
-    public void modificarAplicacion(ModificarAplicacionRequest request) {
+    public AplicacionResponseDTO modificarAplicacion(ModificarAplicacionRequest request, String usuarioModificacion) {
 
-        gestionAplicacionesRepository.modificarAplicacion(
+        return gestionAplicacionesRepository.modificarAplicacion(
                 request.getNombre(),
                 request.getCodigo(),
                 request.getDescripcion(),
                 request.getEstado(),
                 request.getAdministracion(),
-                request.getUsuarioModificacion());
+                usuarioModificacion);
     }
 
     // Método para gestionar administradores de aplicaciones
-    public void gestionarAdministrador(GestionarAdministradorRequest request) {
+    public AdministradorAplicacionResponseDTO gestionarAdministrador(GestionarAdministradorRequest request, String usuarioModificacion) {
 
         Timestamp fechaIn = request.getFechaIn() != null
                 ? Timestamp.valueOf(request.getFechaIn())
@@ -67,12 +67,12 @@ public class GestionAplicacionesService {
                 ? Timestamp.valueOf(request.getFechaFin())
                 : null;
 
-        gestionAplicacionesRepository.gestionarAdministrador(
+        return gestionAplicacionesRepository.gestionarAdministrador(
                 request.getUsuarioRed(),
                 request.getApliId(),
                 request.getOperacion(),
                 fechaIn,
                 fechaFin,
-                request.getUsuarioModificacion());
+                usuarioModificacion);
     }
 }
