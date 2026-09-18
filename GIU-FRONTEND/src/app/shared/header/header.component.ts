@@ -1,7 +1,8 @@
 import { Component , } from '@angular/core';
-
+import { Router } from '@angular/router';
 import { NgIf, CommonModule } from '@angular/common';
 import {  RouterModule } from '@angular/router';
+import { APP_ROUTES } from '../../utils/constants/routes.constants';
 
 @Component({
   selector: 'app-header',
@@ -13,8 +14,13 @@ import {  RouterModule } from '@angular/router';
 export class HeaderComponent {
 
   userName = 'Usuario';
-
   showUserMenu = false;
+  constructor(
+
+    private router: Router,
+  ){
+
+  }
 
   toggleUserMenu(): void {
     this.showUserMenu = !this.showUserMenu;
@@ -22,8 +28,9 @@ export class HeaderComponent {
 
   logout(): void {
     this.showUserMenu = false;
-
-    console.log('Cerrar sesión');
+  
+      this.router.navigate([APP_ROUTES.LOGIN]);
+    
   }
 
   getInitials(name: string): string {

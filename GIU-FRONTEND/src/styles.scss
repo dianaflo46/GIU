@@ -22,6 +22,8 @@ body {
   background-color: #f7f1f1; // en vez de --mat-sys-surface
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
+
+  
 }
 
 /* You can add global styles to this file, and also import other style files */
@@ -30,6 +32,34 @@ html, body {
   padding: 0;
   height: 100%;
   overflow-x: hidden; // por si acaso
+
+  
+
+}
+
+body::before {
+  content: '';
+  position: fixed;
+
+  right: -100px;
+  bottom: -40px; 
+
+  width: 220px;
+  height: 180px;
+
+  background-image: url('/assets/icons/logoClaro.png');
+  background-repeat: no-repeat;
+  background-position: bottom right;
+  background-size: contain;
+  transform: scaleX(-1);
+  opacity: 0.35; // transparencia
+  z-index: 0;
+  pointer-events: none;
+}
+
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 * {
@@ -121,3 +151,5 @@ html {
 .text-order-color {
   color: #1e7b83;
 }
+
+
